@@ -15,7 +15,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const { values: options } = parseArgs({ options: {
   exe: { type: "string" }, sha256: { type: "string" }, web: { type: "string" },
   "baseline-web": { type: "string" }, "legacy-web": { type: "string" },
-  "post-clean-installs": { type: "string" }, "build-id": { type: "string" },
+  "post-clean-installs": { type: "string" }, "hosted-startup-only": { type: "boolean" }, "build-id": { type: "string" },
   openssl: { type: "string" }, csc: { type: "string" }, edge: { type: "string" },
   report: { type: "string", default: join(here, "..", "test-runs", "exe", "acceptance.json") },
   deps: { type: "string", default: join(tmpdir(), "Pulse-Acceptance-Deps-20261120") },
@@ -27,6 +27,7 @@ class CheckError extends Error {}
 function check(value, description) { if (!value) throw new CheckError(description); }
 const isBaseline = Boolean(options["baseline-web"]);
 const isPublic = options.mode === "public";
+const startupOnly = Boolean(options["hosted-startup-only"]);
 const noDirect = options.transport === "relay-only";
 const timeout = Number(options.timeout) * 1000;
 const origin = "https://app.pulse.invalid";
@@ -40,7 +41,8 @@ const assets = ["/index.html", "/styles.css", "/js/auth.js", "/js/account.js", "
   "/js/room-relay.js", "/js/room-voice.js", "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js"];
 const voiceModules = ["/js/room-relay.js", "/js/room-voice.js", "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js"];
 const report = { startedAt: new Date().toISOString(), runId, mode: options.mode, transport: options.transport,
-  clients: isBaseline ? "Two Edge processes serving extracted baseline WebView assets" : "Two Pulse.exe processes under one Windows host",
+  clients: startupOnly ? "One Pulse.exe under a disposable Windows host" : isBaseline
+    ? "Two Edge processes serving extracted baseline WebView assets" : "Two Pulse.exe processes under one Windows host",
   executableSha256: null, resources: {}, checks: {}, lifecycle: [], relay: null };
 
 check(process.platform === "win32", "This acceptance runner uses the Windows WebView2 runtime.");
@@ -50,15 +52,18 @@ check(Number.isFinite(timeout) && timeout >= 18000, "Use a timeout of at least 1
 check(!isPublic || options.live, "Pass --live for real disposable publications to the bundled public relays.");
 check(isBaseline || (options.exe && /^[a-fA-F0-9]{64}$/.test(options.sha256 ?? "")),
   "Supply the portable-enabled release path and its verified --sha256.");
-check(!options["post-clean-installs"] || (!isPublic && !isBaseline && process.env.GITHUB_ACTIONS === "true" &&
+check(!(options["post-clean-installs"] || startupOnly) || (!isPublic && !isBaseline && process.env.GITHUB_ACTIONS === "true" &&
   process.env.RUNNER_ENVIRONMENT === "github-hosted" && process.env.RUNNER_ARCH === "X64" && process.env.RUNNER_TEMP),
-  "Post-clean acceptance expects a disposable GitHub Windows runner and the exact native release.");
+  "Hosted acceptance expects a disposable GitHub Windows runner and the exact native release.");
+check(!startupOnly || !(options["post-clean-installs"] || options["legacy-web"]),
+  "The startup-only diagnostic uses one clean profile without reinstall or migration.");
 const require = createRequire(join(resolve(options.deps), "package.json"));
 const { chromium } = require("playwright-core");
 const ws = require("ws");
 
 let fixture;
 let launcher;
+let startupProxy;
 const clients = [];
 const publicAuthors = new Set();
 const publicRecipients = new Set();
@@ -182,8 +187,8 @@ async function installAssetRoute(context, root) {
   });
 }
 
-function makeClients(root, suffix = "") {
-  return ["A", "B"].map((label) => {
+function makeClients(root, suffix = "", labels = ["A", "B"]) {
+  return labels.map((label) => {
     const peer = { label: label + suffix, root: join(root, label), name: `Pulse QA ${label}${suffix} ${runId}`,
       nick: `pulsee2e_${label.toLowerCase()}${suffix.toLowerCase()}_${runId}`,
       password: `Pulse-QA!${randomBytes(18).toString("hex")}`, stats: new Map() };
@@ -198,7 +203,19 @@ function webArgs() {
     "--disable-quic", "--mute-audio", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows"];
   if (fixture) args.push(`--proxy-server=${fixture.proxy}`, `--ignore-certificate-errors-spki-list=${fixture.pin}`,
     "--force-webrtc-ip-handling-policy=disable_non_proxied_udp");
+  if (startupProxy) args.push(`--proxy-server=${startupProxy.url}`, "--proxy-bypass-list=<-loopback>",
+    "--force-webrtc-ip-handling-policy=disable_non_proxied_udp");
   return args;
+}
+
+async function startStartupProxy() {
+  const server = createServer((socket) => socket.destroy());
+  await new Promise((done, fail) => {
+    server.once("error", fail);
+    server.listen(0, "127.0.0.1", done);
+  });
+  return { url: `http://127.0.0.1:${server.address().port}`,
+    close: () => new Promise((done) => server.close(done)) };
 }
 
 function inspectBrowserChild(pid, port, profile) {
@@ -227,13 +244,15 @@ async function launch(peer, { legacyRoot, fresh = false } = {}) {
       check(!existsSync(profile), "Expected a new WebView2 user data folder.");
       await copyFile(resolve(options.exe), image);
       await writeFile(join(peer.root, "Pulse.ini"), `; Pulse от exepcstudio — настройки этой копии\nportable=1\ndata=${data}\ntray=0\nautostart=0\n`);
+      if (startupProxy) await writeFile(image + ".config", `<configuration><system.net><defaultProxy useDefaultCredentials="false"><proxy usesystemdefault="false" bypassonlocal="false" proxyaddress="${startupProxy.url}" /></defaultProxy></system.net></configuration>`);
     }
     check(sha(await readFile(image)) === report.executableSha256, "Disposable image differs from release SHA-256.");
-    const port = await findPort();
+    const port = peer.debugPort ?? await findPort();
+    peer.debugPort = port;
     const additional = [...webArgs(), `--remote-debugging-port=${port}`, "--remote-debugging-address=127.0.0.1", "--enable-automation"];
     const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^WEBVIEW2_/i.test(key)));
     env.WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = additional.join(" ");
-    const privateDesktop = !options["post-clean-installs"];
+    const privateDesktop = !options["post-clean-installs"] && !startupOnly;
     const args = privateDesktop ? [image] : [image, "--inherit-desktop"];
     const child = spawn(launcher, args, { cwd: peer.root, env, windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
     peer.child = child;
@@ -247,6 +266,7 @@ async function launch(peer, { legacyRoot, fresh = false } = {}) {
     peer.pid = await waitFor("Windows child launcher did not create a Pulse.exe process.", () =>
       Number(peer.childOutput.match(/PULSE_PID=(\d+)/)?.[1]));
     const observation = { label: peer.label, pid: peer.pid, fresh, privateDesktop, legacyAssetsRoute: Boolean(legacyRoot),
+      cdpArgumentInLauncher: /CDP_ARGUMENT_IN_LAUNCHER=yes/.test(peer.childOutput),
       cdpEndpointReached: false, cdpTargets: {} };
     report.lifecycle.push(observation);
     try {
@@ -276,13 +296,16 @@ async function launch(peer, { legacyRoot, fresh = false } = {}) {
     await peer.page.setViewportSize({ width: 1400, height: 880 });
     const browserCdp = await peer.browser.newBrowserCDPSession();
     const runtime = await browserCdp.send("Browser.getVersion");
+    const processes = await browserCdp.send("SystemInfo.getProcessInfo").catch(() => ({ processInfo: [] }));
+    peer.browserPid = processes.processInfo.find((item) => item.type === "browser")?.id;
     const command = await browserCdp.send("Browser.getBrowserCommandLine").catch(() => ({ arguments: [] }));
     const dataArg = command.arguments.find((arg) => arg.startsWith("--user-data-dir="))?.substring(16);
     const expectedProfile = resolve(profile).toLowerCase();
     const reportedProfile = dataArg ? resolve(dataArg).toLowerCase() : null;
     const profileArgMatches = reportedProfile === expectedProfile || reportedProfile?.startsWith(expectedProfile + sep);
     check(profileArgMatches && (await lstat(profile)).isDirectory(), "Unexpected WebView2 runtime user data path.");
-    Object.assign(observation, { runtime: runtime.product, profileCreated: true, profileArgMatches });
+    Object.assign(observation, { runtime: runtime.product, browserPid: peer.browserPid, profileCreated: true, profileArgMatches });
+    if (startupOnly) observation.webViewChildren = inspectBrowserChild(peer.pid, port, profile);
     if (legacyRoot) await installAssetRoute(peer.context, resolve(legacyRoot));
   }
   peer.page.setDefaultTimeout(timeout);
@@ -299,17 +322,56 @@ async function stop(peer) {
     peer.context = null;
     return;
   }
+  if (peer.browser?.isConnected()) await peer.browser.close().catch(() => {});
   const child = peer.child;
   if (child && child.exitCode == null && child.signalCode == null) {
     child.stdin.end("stop\n");
     const exit = waitFor("The dedicated Windows test job did not shut down.", () =>
       child.exitCode !== null || child.signalCode !== null, 14000);
     try { await exit; } catch { child.kill(); await sleep(600); }
-    report.lifecycle.push({ label: peer.label, stopped: /CLOSE=graceful/.test(peer.childOutput) ? "WM_CLOSE" : "job" });
+    peer.lastClose = /CLOSE=graceful/.test(peer.childOutput) ? "WM_CLOSE" : "job";
+    report.lifecycle.push({ label: peer.label, stopped: peer.lastClose });
   }
   peer.child = null;
   peer.browser = null;
   peer.context = null;
+}
+
+function processIsRunning(pid) {
+  try { process.kill(pid, 0); return true; }
+  catch (error) {
+    if (error.code === "ESRCH") return false;
+    if (error.code === "EPERM") return true;
+    throw error;
+  }
+}
+
+async function restartGuest(peer) {
+  if (isBaseline) { await stop(peer); await launch(peer); return; }
+  const priorPid = peer.pid;
+  const previousBrowser = peer.browserPid ? [peer.browserPid] :
+    inspectBrowserChild(priorPid, peer.debugPort, join(peer.root, "Data", "WebView")).childPids ?? [];
+  check(previousBrowser.length > 0, "The previous WebView2 browser process could not be identified.");
+  const browserPidsBeforeClose = previousBrowser.filter(processIsRunning);
+  check(browserPidsBeforeClose.length === previousBrowser.length, "The old browser exited before the restart action.");
+  const started = Date.now();
+  await stop(peer);
+  const postClose = { label: peer.label, priorPid, previousBrowser, closeMethod: peer.lastClose,
+    browserPidsAtLauncherExit: previousBrowser.filter(processIsRunning), oldCdpListening: null };
+  report.lifecycle.push(postClose);
+  check(peer.lastClose === "WM_CLOSE", "The old Pulse.exe did not exit through its normal close action.");
+  await waitFor("The closed Pulse.exe or its WebView2 retained the same profile after shutdown.", async () => {
+    if ([priorPid, ...previousBrowser].some(processIsRunning)) return false;
+    const endpoint = `http://127.0.0.1:${peer.debugPort}/json/version`;
+    postClose.oldCdpListening = await fetch(endpoint, { signal: AbortSignal.timeout(300) })
+      .then(() => true, () => false);
+    return !postClose.oldCdpListening;
+  }, 18_000);
+  postClose.elapsedToProfileReleaseMs = Date.now() - started;
+  postClose.sameDebugPortOnRestart = true;
+  await launch(peer);
+  check(peer.pid !== priorPid, "The guest process was not restarted.");
+  return postClose;
 }
 
 const text = async (page, selector) => (await page.locator(selector).textContent())?.trim() ?? "";
@@ -714,17 +776,15 @@ async function acceptPair(pair, prefix) {
     await waitFor("Both clients did not reconnect to the loopback relay.", () => fixture.summary().connections >= before + 2);
     await bothInRoom(b, a, reversal.name);
     await exchangeText(a, b);
-    const priorPid = a.pid;
-    await stop(a);
-    await launch(a);
-    if (!isBaseline) check(a.pid !== priorPid, "The guest process was not restarted.");
+    const shutdown = await restartGuest(a);
     if (await isVisible(a.page, "#ob-login")) await signIn(a);
     await expectText(a.page, "#w-name", a.name);
     if (!await isVisible(a.page, "#view-room")) await joinByCode(a, reversal.code, reversal.name);
     await bothInRoom(b, a, reversal.name);
     await exchangeText(b, a);
     return { actualSocketClosure: true, newConnections: fixture.summary().connections - before,
-      guestProcessChanged: !isBaseline, participantsOnBothClients: 2, textDirections: 2 };
+      guestProcessChanged: !isBaseline, participantsOnBothClients: 2, textDirections: 2,
+      shutdownVerified: Boolean(shutdown), elapsedToProfileReleaseMs: shutdown?.elapsedToProfileReleaseMs };
   }, reversed && Boolean(fixture));
 }
 
@@ -740,9 +800,19 @@ try {
     const csc = options.csc ?? join(process.env.WINDIR ?? "C:/Windows", "Microsoft.NET/Framework64/v4.0.30319/csc.exe");
     execFileSync(csc, ["/nologo", "/optimize+", "/platform:x64", `/out:${launcher}`, join(here, "exe-desktop.cs")], { windowsHide: true });
   }
-  if (!isPublic) fixture = await startRelayFixture(options.openssl ??
-    join(process.env.ProgramW6432 ?? process.env.ProgramFiles ?? "C:/Program Files", "Git/usr/bin/openssl.exe"), ws,
-    isBaseline ? resolve(options["baseline-web"]) : undefined);
+  if (startupOnly) {
+    startupProxy = await startStartupProxy();
+    await stage("Hosted WebView2 startup diagnostic", async () => {
+      const [peer] = makeClients(join(scratch, "diagnostic"), "D", ["A"]);
+      await launch(peer, { fresh: true });
+      await attestResourceLoads(peer, expectedWeb, peer.label, assets);
+      return { nativeStartup: true, accountCreated: false, relayStarted: false };
+    });
+  } else if (!isPublic) {
+    fixture = await startRelayFixture(options.openssl ??
+      join(process.env.ProgramW6432 ?? process.env.ProgramFiles ?? "C:/Program Files", "Git/usr/bin/openssl.exe"), ws,
+      isBaseline ? resolve(options["baseline-web"]) : undefined);
+  }
   if (options["post-clean-installs"]) {
     const startedClean = await stage("10 hosted cleanup paths free of the old executables and profiles", async () => {
       const runnerTemp = await realpath(process.env.RUNNER_TEMP);
@@ -761,7 +831,7 @@ try {
       return { oldExeAbsent: 2, oldDataAbsent: 2 };
     });
     if (startedClean) await acceptPair(postCleanPair, "10 post-clean ");
-  } else {
+  } else if (!startupOnly) {
     await acceptPair(makeClients(join(scratch, "clients")), "");
   }
   if (options["legacy-web"] && fixture) {
@@ -779,7 +849,7 @@ try {
         "Each public profile must receive an acceptance reply on a real relay.");
       return { publicProfileAuthors: 2, privateDataExposuresObserved: 0 };
     });
-  } else {
+  } else if (fixture) {
     report.relay = fixture.summary();
   }
 } catch (error) {
@@ -788,6 +858,7 @@ try {
 } finally {
   for (const peer of clients) await stop(peer);
   await fixture?.close();
+  await startupProxy?.close();
   const actual = await realpath(scratch);
   check(dirname(actual).toLowerCase() === tmpRoot.toLowerCase() && basename(actual).startsWith("PulseExeQa-"),
     "Refusing to remove a directory outside the temporary test root.");

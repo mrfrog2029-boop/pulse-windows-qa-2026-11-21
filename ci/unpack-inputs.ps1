@@ -14,7 +14,13 @@ try {
         $target = [IO.Path]::GetFullPath((Join-Path $root $name))
         if (-not $target.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) { throw 'Test input outside workspace.' }
         if ([IO.File]::Exists($target)) {
-            if ($name -cnotmatch '^tests/[A-Za-z0-9._-]+$') { throw "Unexpected collision for $name." }
+            if ($name -cmatch '^tests/[A-Za-z0-9._-]+$') { continue }
+            $inputStream = $entry.Open()
+            try { $packedHash = (Get-FileHash -InputStream $inputStream -Algorithm SHA256).Hash }
+            finally { $inputStream.Dispose() }
+            if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $packedHash) {
+                throw "Checked-out file differs from the test archive: $name."
+            }
             continue
         }
         [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($target))

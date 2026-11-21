@@ -1,0 +1,2 @@
+# Embedded web resources and deterministic Windows build inputs must retain their exact bytes.
+* -text

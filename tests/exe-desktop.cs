@@ -148,6 +148,8 @@ internal static class PulseDesktop
             if (!string.Equals(actualImage.ToString(), image, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("The launched image was not the disposable file.");
             Required(ResumeThread(child.Thread) != uint.MaxValue, "ResumeThread");
+            string browserArgs = Environment.GetEnvironmentVariable("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS") ?? "";
+            Console.WriteLine("CDP_ARGUMENT_IN_LAUNCHER={0}", browserArgs.Contains("--remote-debugging-port=") ? "yes" : "no");
             Console.WriteLine("PULSE_PID={0}", child.Id);
             Console.Out.Flush();
 

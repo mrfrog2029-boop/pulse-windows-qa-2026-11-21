@@ -57,6 +57,13 @@ jobs:
           $slots = Join-Path $env:RUNNER_TEMP 'pulse-cleanup-hosted\installs'
           node .\tests\exe-acceptance.mjs --exe .\release\Pulse.exe --sha256 $env:PULSE_QA_SHA --build-id $env:PULSE_QA_BUILD --web $env:PULSE_QA_WEB --deps $env:PULSE_QA_DEPS --transport relay-only --post-clean-installs $slots --report .\test-runs\exe-hosted-post-clean.json
           exit $LASTEXITCODE
+      - name: Diagnose native startup on Windows Server 2025
+        if: ${{ !cancelled() && matrix.image == 'windows-2025' && steps.cleanup.outcome != 'skipped' }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          node .\tests\exe-acceptance.mjs --exe .\release\Pulse.exe --sha256 $env:PULSE_QA_SHA --build-id $env:PULSE_QA_BUILD --web $env:PULSE_QA_WEB --deps $env:PULSE_QA_DEPS --hosted-startup-only --report .\test-runs\exe-hosted-startup.json
+          exit $LASTEXITCODE
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ !cancelled() }}
         with:
@@ -65,5 +72,12 @@ jobs:
             test-runs/device.json
             test-runs/cleanup-hosted.json
             test-runs/exe-hosted-post-clean.json
+          if-no-files-found: warn
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && matrix.image == 'windows-2025' && steps.cleanup.outcome != 'skipped' }}
+        with:
+          name: native-startup-windows-2025-${{ github.run_attempt }}
+          path: test-runs/exe-hosted-startup.json
           if-no-files-found: warn
           retention-days: 14

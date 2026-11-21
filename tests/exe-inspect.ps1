@@ -70,6 +70,7 @@ $edgeReadOnly = foreach ($hive in @('HKLM', 'HKCU')) {
 
 [pscustomobject]@{
     childCount = $children.Count
+    childPids = @($children | ForEach-Object { $_.ProcessId })
     readableCommandLines = @($children | Where-Object CommandLine).Count
     debugPortSwitchPresent = $flags.ContainsKey('remote-debugging-port')
     debugPortMatchesRequested = $flags['remote-debugging-port'] -eq [string]$DebugPort
