@@ -1,0 +1,12 @@
+{
+  "provider": "GitHub-hosted VM",
+  "os": "Microsoft Windows Server 2025 Datacenter",
+  "osBuild": "26100",
+  "architecture": "X64",
+  "image": "win25-vs2026",
+  "imageVersion": "20261116.315.1",
+  "webview2": "157.0.4341.46",
+  "build": "71446d0e81b0c49e",
+  "pulseSha256": "B872AB95A79364BA9F944DBE3D06204A470A90E9FB7749FBD794BA87959DEC8B",
+  "cleanupSha256": "FB6929E3A8BB334290912F1082A0B19776C82D9C244F32DBAB937EDE303A6F73"
+}

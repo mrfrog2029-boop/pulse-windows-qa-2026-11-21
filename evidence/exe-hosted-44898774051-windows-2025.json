@@ -1,0 +1,66 @@
+{
+  "startedAt": "2026-11-21T11:22:56.444Z",
+  "runId": "d196192132",
+  "mode": "loopback",
+  "transport": "default",
+  "clients": "One Pulse.exe under a disposable Windows host",
+  "executableSha256": "b872ab95a79364ba9f944dbe3d06204a470a90e9fb7749fbd794ba87959dec8b",
+  "resources": {},
+  "checks": {
+    "Hosted WebView2 startup diagnostic": {
+      "status": "FAIL",
+      "ms": 36582,
+      "details": "The spawned Pulse.exe did not expose its isolated WebView2 target.",
+      "testCodeLine": 82
+    }
+  },
+  "lifecycle": [
+    {
+      "label": "AD",
+      "pid": 9084,
+      "fresh": true,
+      "privateDesktop": false,
+      "legacyAssetsRoute": false,
+      "cdpArgumentInLauncher": true,
+      "cdpEndpointReached": false,
+      "cdpTargets": {},
+      "webViewChildren": {
+        "childCount": 1,
+        "childPids": [
+          8840
+        ],
+        "readableCommandLines": 1,
+        "debugPortSwitchPresent": false,
+        "debugPortMatchesRequested": false,
+        "remoteDebuggingPipePresent": false,
+        "browserArgumentsApplied": false,
+        "userDataDirMatchesFixture": true,
+        "runtimeProfileExists": true,
+        "defaultStorageExists": true,
+        "devToolsActivePortFile": false,
+        "edgePolicies": [
+          {
+            "hive": "HKLM",
+            "remoteDebuggingAllowed": null,
+            "developerToolsAvailability": null,
+            "pulseArgumentOverrides": []
+          },
+          {
+            "hive": "HKCU",
+            "remoteDebuggingAllowed": null,
+            "developerToolsAvailability": null,
+            "pulseArgumentOverrides": []
+          }
+        ]
+      }
+    },
+    {
+      "label": "AD",
+      "stopped": "WM_CLOSE"
+    }
+  ],
+  "relay": null,
+  "disposableProfilesRemoved": true,
+  "rendererErrorTypes": {},
+  "finishedAt": "2026-11-21T11:23:33.625Z"
+}

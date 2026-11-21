@@ -1,0 +1,971 @@
+{
+  "startedAt": "2026-11-21T11:19:06.353Z",
+  "runId": "a1136815b4",
+  "mode": "loopback",
+  "transport": "relay-only",
+  "clients": "Two Pulse.exe processes under one Windows host",
+  "executableSha256": "b872ab95a79364ba9f944dbe3d06204a470a90e9fb7749fbd794ba87959dec8b",
+  "resources": {
+    "A": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html; charset=utf-8",
+        "hash": "fc6eecafbeda592403bf6629f0a0ed2ccaffdc41713871285b774262f88d9369",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css; charset=utf-8",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ad45902da3b93d39da9cebe210c89289044d5a37abb131ab46fea7df012868b3",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "9dc4275afbc7827a3a60e1073a382d6ee0bc95db31b5180710b21931b7e7bcef",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "1381707065f666be9b736e9d058fdacf9f096ed5b41b15a178e7b7b664983357",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "4b4f3c615bb27bc98b7170a933fe0e368e648eace302469676fd6d2e26e8ea50",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "69b59595e2bd97cb49fe60987b23df94a0bef02b84c620296ecb686a356cc324",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "6d5829fb2f49fe6b5404bc5b7265609db438e1018fd0a61545121a1524cd5595",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "f40a38f2e57e128703b3062a959a7537aaac52c603f841347ab7a9c8c0f87d71",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/network-diagnostics.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "28484da8490b430cfa25669a8d6fbb1037476783a6ad600ad5a7e923aab206ae",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "buildId": "71446d0e81b0c49e"
+    },
+    "A after onboarding": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js"
+    ],
+    "B": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html; charset=utf-8",
+        "hash": "fc6eecafbeda592403bf6629f0a0ed2ccaffdc41713871285b774262f88d9369",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css; charset=utf-8",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ad45902da3b93d39da9cebe210c89289044d5a37abb131ab46fea7df012868b3",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "9dc4275afbc7827a3a60e1073a382d6ee0bc95db31b5180710b21931b7e7bcef",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "1381707065f666be9b736e9d058fdacf9f096ed5b41b15a178e7b7b664983357",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "4b4f3c615bb27bc98b7170a933fe0e368e648eace302469676fd6d2e26e8ea50",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "69b59595e2bd97cb49fe60987b23df94a0bef02b84c620296ecb686a356cc324",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "6d5829fb2f49fe6b5404bc5b7265609db438e1018fd0a61545121a1524cd5595",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "f40a38f2e57e128703b3062a959a7537aaac52c603f841347ab7a9c8c0f87d71",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/network-diagnostics.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "28484da8490b430cfa25669a8d6fbb1037476783a6ad600ad5a7e923aab206ae",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "buildId": "71446d0e81b0c49e"
+    },
+    "B after onboarding": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js"
+    ],
+    "A after room entry": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js",
+      "/js/room-voice.js",
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js"
+    ],
+    "B after room entry": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js",
+      "/js/room-voice.js",
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js"
+    ],
+    "AL extracted baseline": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html",
+        "hash": "c7b833068a9126e042e8e4676be5122a5b6fa870ea664364d6172a8f3cc095ae",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "4c6ef401bbd28d09bf1ee7877e9cde852dfc80169a41682ca0ac367e12215619",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b913d7c6ef984ccfbdd8dd1bc64972b1b9169cb0cfe8f653a96c5ada15c3fbb0",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b107f4415d6da2ba9ad9692e9479801af26f78ad0d5ec5967d107eef214fbb40",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "7902fa586f144ec86fef22abcd8bf143bfff94e1d1d00459974facc4cf942228",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "fd5db4214aeb32691726cdb90dc7ed0b9e36bfe14d743520ea4af909ec8bd8a2",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "da23f2cb731dbf12bd11898887ab1245a6333230053789bf9c2dbcf886eee84a",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "23f8e1dd1707a8713b7bf51ec788f9570f4f0555abf3f4f1f63774744fec3509",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      }
+    },
+    "BL extracted baseline": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html",
+        "hash": "c7b833068a9126e042e8e4676be5122a5b6fa870ea664364d6172a8f3cc095ae",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "4c6ef401bbd28d09bf1ee7877e9cde852dfc80169a41682ca0ac367e12215619",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b913d7c6ef984ccfbdd8dd1bc64972b1b9169cb0cfe8f653a96c5ada15c3fbb0",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b107f4415d6da2ba9ad9692e9479801af26f78ad0d5ec5967d107eef214fbb40",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "7902fa586f144ec86fef22abcd8bf143bfff94e1d1d00459974facc4cf942228",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "fd5db4214aeb32691726cdb90dc7ed0b9e36bfe14d743520ea4af909ec8bd8a2",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "da23f2cb731dbf12bd11898887ab1245a6333230053789bf9c2dbcf886eee84a",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "23f8e1dd1707a8713b7bf51ec788f9570f4f0555abf3f4f1f63774744fec3509",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      }
+    },
+    "AL final": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html; charset=utf-8",
+        "hash": "fc6eecafbeda592403bf6629f0a0ed2ccaffdc41713871285b774262f88d9369",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css; charset=utf-8",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ad45902da3b93d39da9cebe210c89289044d5a37abb131ab46fea7df012868b3",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "9dc4275afbc7827a3a60e1073a382d6ee0bc95db31b5180710b21931b7e7bcef",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "1381707065f666be9b736e9d058fdacf9f096ed5b41b15a178e7b7b664983357",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "4b4f3c615bb27bc98b7170a933fe0e368e648eace302469676fd6d2e26e8ea50",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "69b59595e2bd97cb49fe60987b23df94a0bef02b84c620296ecb686a356cc324",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "6d5829fb2f49fe6b5404bc5b7265609db438e1018fd0a61545121a1524cd5595",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "f40a38f2e57e128703b3062a959a7537aaac52c603f841347ab7a9c8c0f87d71",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/network-diagnostics.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "28484da8490b430cfa25669a8d6fbb1037476783a6ad600ad5a7e923aab206ae",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "buildId": "71446d0e81b0c49e"
+    },
+    "BL final": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html; charset=utf-8",
+        "hash": "fc6eecafbeda592403bf6629f0a0ed2ccaffdc41713871285b774262f88d9369",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css; charset=utf-8",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ad45902da3b93d39da9cebe210c89289044d5a37abb131ab46fea7df012868b3",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "9dc4275afbc7827a3a60e1073a382d6ee0bc95db31b5180710b21931b7e7bcef",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "1381707065f666be9b736e9d058fdacf9f096ed5b41b15a178e7b7b664983357",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "4b4f3c615bb27bc98b7170a933fe0e368e648eace302469676fd6d2e26e8ea50",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "69b59595e2bd97cb49fe60987b23df94a0bef02b84c620296ecb686a356cc324",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "6d5829fb2f49fe6b5404bc5b7265609db438e1018fd0a61545121a1524cd5595",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "f40a38f2e57e128703b3062a959a7537aaac52c603f841347ab7a9c8c0f87d71",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/network-diagnostics.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "28484da8490b430cfa25669a8d6fbb1037476783a6ad600ad5a7e923aab206ae",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "buildId": "71446d0e81b0c49e"
+    }
+  },
+  "checks": {
+    "startup and new profiles": {
+      "status": "PASS",
+      "ms": 6384,
+      "details": {
+        "distinctProfilesAndSessions": true,
+        "freshProfiles": 2
+      }
+    },
+    "1 bidirectional exact nickname": {
+      "status": "PASS",
+      "ms": 486,
+      "details": {
+        "A": "found",
+        "B": "found"
+      }
+    },
+    "2a absent nickname": {
+      "status": "PASS",
+      "ms": 454,
+      "details": {
+        "result": "absent"
+      }
+    },
+    "2b directory technical failure": {
+      "status": "PASS",
+      "ms": 462,
+      "details": {
+        "result": "technical failure",
+        "relayClosedQuery": true
+      }
+    },
+    "3 accepted friendship and online presence": {
+      "status": "PASS",
+      "ms": 6617,
+      "details": {
+        "accepted": true,
+        "onlineBothWays": true
+      }
+    },
+    "4 sign-out and sign-in": {
+      "status": "PASS",
+      "ms": 566,
+      "details": {
+        "observedOffline": true,
+        "observedOnlineAfterSignIn": true,
+        "signedOfflineEvent": true
+      }
+    },
+    "7 malformed and unknown room codes": {
+      "status": "PASS",
+      "ms": 12255,
+      "details": {
+        "malformedRejected": true,
+        "unusedValidFormatRejected": true,
+        "roomUiNeverOpened": true
+      }
+    },
+    "5 A hosts and B joins by code": {
+      "status": "PASS",
+      "ms": 644,
+      "details": {
+        "participantsOnBothClients": 2,
+        "textDirections": 2,
+        "sameRelayRoomTopic": true
+      }
+    },
+    "activated room transport resources": {
+      "status": "PASS",
+      "ms": 8595,
+      "details": {
+        "bothClients": [
+          true,
+          true
+        ]
+      }
+    },
+    "6 B hosts and A joins by code": {
+      "status": "PASS",
+      "ms": 468,
+      "details": {
+        "participantsOnBothClients": 2,
+        "textDirections": 2,
+        "sameRelayRoomTopic": true,
+        "relayOnly": [
+          {
+            "observed": 5,
+            "direct": false
+          },
+          {
+            "observed": 3,
+            "direct": false
+          }
+        ]
+      }
+    },
+    "8 actual outage, socket recovery and process restart": {
+      "status": "PASS",
+      "ms": 4107,
+      "details": {
+        "actualSocketClosure": true,
+        "newConnections": 4,
+        "guestProcessChanged": true,
+        "participantsOnBothClients": 2,
+        "textDirections": 2,
+        "shutdownVerified": true,
+        "elapsedToProfileReleaseMs": 124
+      }
+    },
+    "9 baseline-created account, friendship and relay state reopened by exact release": {
+      "status": "PASS",
+      "ms": 13637,
+      "details": {
+        "persistentDistinctIds": true,
+        "existingProfilesWithNewSessions": true,
+        "friendships": true,
+        "configuredRelay": true,
+        "roomParticipants": 2,
+        "textDirections": 2
+      }
+    }
+  },
+  "lifecycle": [
+    {
+      "label": "A",
+      "pid": 35920,
+      "fresh": true,
+      "privateDesktop": true,
+      "legacyAssetsRoute": false,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/157.0.4341.60",
+      "browserPid": 3928,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "B",
+      "pid": 3236,
+      "fresh": true,
+      "privateDesktop": true,
+      "legacyAssetsRoute": false,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/157.0.4341.60",
+      "browserPid": 27320,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "A",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "A",
+      "priorPid": 35920,
+      "previousBrowser": [
+        3928
+      ],
+      "closeMethod": "WM_CLOSE",
+      "browserPidsAtLauncherExit": [],
+      "oldCdpListening": false,
+      "elapsedToProfileReleaseMs": 124,
+      "sameDebugPortOnRestart": true
+    },
+    {
+      "label": "A",
+      "pid": 26124,
+      "fresh": false,
+      "privateDesktop": true,
+      "legacyAssetsRoute": false,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/157.0.4341.60",
+      "browserPid": 35652,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "AL",
+      "pid": 4796,
+      "fresh": true,
+      "privateDesktop": true,
+      "legacyAssetsRoute": true,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/157.0.4341.60",
+      "browserPid": 20616,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "BL",
+      "pid": 6996,
+      "fresh": true,
+      "privateDesktop": true,
+      "legacyAssetsRoute": true,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/157.0.4341.60",
+      "browserPid": 33088,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "AL",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "BL",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "AL",
+      "pid": 10900,
+      "fresh": false,
+      "privateDesktop": true,
+      "legacyAssetsRoute": false,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/157.0.4341.60",
+      "browserPid": 31072,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "BL",
+      "pid": 27668,
+      "fresh": false,
+      "privateDesktop": true,
+      "legacyAssetsRoute": false,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/157.0.4341.60",
+      "browserPid": 35904,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "A",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "B",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "AL",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "BL",
+      "stopped": "WM_CLOSE"
+    }
+  ],
+  "relay": {
+    "connections": 19,
+    "requests": 96,
+    "exactQueries": 14,
+    "exactEmpty": 9,
+    "exactUnavailable": 1,
+    "profiles": 6,
+    "heartbeats": 8,
+    "offlineEvents": 1,
+    "explicitOfflineAddress": 1,
+    "mail": 6,
+    "roomFrames": 46,
+    "signaling": 133,
+    "badFrame": 0,
+    "disconnects": 1,
+    "authors": 4,
+    "foreignMail": 0,
+    "topicsSeenFromTwoAuthors": 3
+  },
+  "disposableProfilesRemoved": true,
+  "rendererErrorTypes": {},
+  "finishedAt": "2026-11-21T11:20:02.613Z"
+}

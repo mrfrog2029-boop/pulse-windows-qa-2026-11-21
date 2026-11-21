@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "startedAt": "2026-11-21T11:21:37.372Z",
+  "role": "A",
+  "runId": "38a4b395c450de9965",
+  "mode": "public-default-relays",
+  "executableSha256": "b872ab95a79364ba9f944dbe3d06204a470a90e9fb7749fbd794ba87959dec8b",
+  "machineIdentities": {
+    "azureVmId": "8181b13bc2b8de5f3aa9d0c564bb153ddf500950da384218d91bbc0f7670b16a",
+    "smbiosUuid": "3d7518da892c227d33bd6633d4042f1f44413b09326ebc1eb74202fc031da5cb"
+  },
+  "hosted": true,
+  "windowsRelease": "10.0.20348",
+  "architecture": "x64",
+  "checks": {
+    "Exact native executable": {
+      "status": "PASS",
+      "exactSha256": true,
+      "expectedBuildMarker": true
+    },
+    "Disposable signup and relay receipt": {
+      "status": "PASS",
+      "relayAcceptedOwnProfile": true
+    },
+    "Peer identity from the other job": {
+      "status": "PASS",
+      "signedDirectoryIdentityMatched": true
+    },
+    "Exact nickname discovery": {
+      "status": "PASS",
+      "exactNicknameShownByClient": true
+    },
+    "Accepted friendship and online presence": {
+      "status": "PASS",
+      "locallyObservedOnline": true
+    },
+    "A hosts and B joins": {
+      "status": "PASS",
+      "codeIssued": true,
+      "codeEnteredFromPeerDm": false,
+      "privateRoom": true,
+      "locallyObservedParticipants": 2,
+      "peerRoomMessage": true,
+      "reciprocalVerification": true,
+      "joinAttempts": 0
+    },
+    "B hosts and A joins": {
+      "status": "PASS",
+      "codeIssued": false,
+      "codeEnteredFromPeerDm": true,
+      "privateRoom": true,
+      "locallyObservedParticipants": 2,
+      "peerRoomMessage": true,
+      "reciprocalVerification": true,
+      "joinAttempts": 1
+    },
+    "Targeted traffic": {
+      "status": "PASS",
+      "targetedFramesToVerifiedPeer": 20,
+      "encryptedCopiesToOwnAccount": 15,
+      "blockedRecipients": 0
+    }
+  },
+  "nativeStartup": {
+    "inheritedDesktop": true,
+    "childStarted": true,
+    "webViewDataCreated": true,
+    "cdpAnswered": true,
+    "applicationPageSeen": true
+  },
+  "webView": {
+    "runtime": "Edg/131.0.2903.86",
+    "disposableProfile": true,
+    "desktop": "inherited disposable VM desktop",
+    "buildId": "71446d0e81b0c49e"
+  },
+  "identityFingerprint": "4f5cf2cb2cb2600aca1404db3c03566be4573e4bf8047c8211aba33d4240fea2",
+  "peerIdentityFingerprint": "4ed6cfa54831ec18541531b5053b2b2643a6448296354ca1f3b6306057a43549",
+  "disposableProfileRemoved": true,
+  "relay": {
+    "ownProfileReceipts": 10,
+    "eose": 92,
+    "socketErrors": 0,
+    "acceptedTargetedMail": 34,
+    "acceptedRoomEvents": 40
+  },
+  "finishedAt": "2026-11-21T11:22:01.585Z",
+  "status": "PASS"
+}

@@ -1,0 +1,294 @@
+{
+  "startedAt": "2026-11-21T10:48:50.908Z",
+  "runId": "c7e0855292",
+  "mode": "loopback",
+  "transport": "relay-only",
+  "clients": "Two Edge processes serving extracted baseline WebView assets",
+  "executableSha256": null,
+  "resources": {
+    "A": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html",
+        "hash": "c7b833068a9126e042e8e4676be5122a5b6fa870ea664364d6172a8f3cc095ae",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "4c6ef401bbd28d09bf1ee7877e9cde852dfc80169a41682ca0ac367e12215619",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b913d7c6ef984ccfbdd8dd1bc64972b1b9169cb0cfe8f653a96c5ada15c3fbb0",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b107f4415d6da2ba9ad9692e9479801af26f78ad0d5ec5967d107eef214fbb40",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "7902fa586f144ec86fef22abcd8bf143bfff94e1d1d00459974facc4cf942228",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "fd5db4214aeb32691726cdb90dc7ed0b9e36bfe14d743520ea4af909ec8bd8a2",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "da23f2cb731dbf12bd11898887ab1245a6333230053789bf9c2dbcf886eee84a",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "23f8e1dd1707a8713b7bf51ec788f9570f4f0555abf3f4f1f63774744fec3509",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      }
+    },
+    "A after onboarding": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-time.js",
+      "/js/room-links.js"
+    ],
+    "B": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html",
+        "hash": "c7b833068a9126e042e8e4676be5122a5b6fa870ea664364d6172a8f3cc095ae",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "4c6ef401bbd28d09bf1ee7877e9cde852dfc80169a41682ca0ac367e12215619",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b913d7c6ef984ccfbdd8dd1bc64972b1b9169cb0cfe8f653a96c5ada15c3fbb0",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "b107f4415d6da2ba9ad9692e9479801af26f78ad0d5ec5967d107eef214fbb40",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "7902fa586f144ec86fef22abcd8bf143bfff94e1d1d00459974facc4cf942228",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "fd5db4214aeb32691726cdb90dc7ed0b9e36bfe14d743520ea4af909ec8bd8a2",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "da23f2cb731dbf12bd11898887ab1245a6333230053789bf9c2dbcf886eee84a",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "23f8e1dd1707a8713b7bf51ec788f9570f4f0555abf3f4f1f63774744fec3509",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      }
+    },
+    "B after onboarding": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-time.js",
+      "/js/room-links.js"
+    ]
+  },
+  "checks": {
+    "startup and new profiles": {
+      "status": "PASS",
+      "ms": 5332,
+      "details": {
+        "distinctProfilesAndSessions": true,
+        "freshProfiles": 2
+      }
+    },
+    "1 bidirectional exact nickname": {
+      "status": "PASS",
+      "ms": 467,
+      "details": {
+        "A": "found",
+        "B": "found"
+      }
+    },
+    "2a absent nickname": {
+      "status": "PASS",
+      "ms": 445,
+      "details": {
+        "result": "absent"
+      }
+    },
+    "2b directory technical failure": {
+      "status": "PASS",
+      "ms": 6456,
+      "details": {
+        "result": "technical failure",
+        "relayClosedQuery": true
+      }
+    },
+    "3 accepted friendship and online presence": {
+      "status": "PASS",
+      "ms": 8673,
+      "details": {
+        "accepted": true,
+        "onlineBothWays": true
+      }
+    },
+    "4 sign-out and sign-in": {
+      "status": "FAIL",
+      "ms": 20568,
+      "details": "The other client did not show explicit offline after logout.",
+      "testCodeLine": 75
+    },
+    "7 malformed and unknown room codes": {
+      "status": "FAIL",
+      "ms": 130,
+      "details": "The unused valid-format code reported room opened.",
+      "testCodeLine": 27
+    },
+    "5 A hosts and B joins by code": {
+      "status": "FAIL",
+      "ms": 20214,
+      "details": "B did not display A in its room roster.",
+      "testCodeLine": 75
+    },
+    "6 B hosts and A joins by code": {
+      "status": "FAIL",
+      "ms": 20165,
+      "details": "B did not display A in its room roster.",
+      "testCodeLine": 75
+    },
+    "8 actual outage, socket recovery and process restart": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    }
+  },
+  "lifecycle": [],
+  "relay": {
+    "connections": 6,
+    "requests": 42,
+    "exactQueries": 9,
+    "exactEmpty": 5,
+    "exactUnavailable": 1,
+    "profiles": 3,
+    "heartbeats": 4,
+    "offlineEvents": 0,
+    "explicitOfflineAddress": 0,
+    "mail": 3,
+    "roomFrames": 15,
+    "signaling": 69,
+    "badFrame": 0,
+    "disconnects": 0,
+    "authors": 2,
+    "foreignMail": 0,
+    "topicsSeenFromTwoAuthors": 1
+  },
+  "disposableProfilesRemoved": true,
+  "rendererErrorTypes": {},
+  "finishedAt": "2026-11-21T10:50:14.327Z"
+}

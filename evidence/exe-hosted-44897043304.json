@@ -1,0 +1,94 @@
+{
+  "startedAt": "2026-11-21T11:01:57.309Z",
+  "runId": "2958c72877",
+  "mode": "loopback",
+  "transport": "relay-only",
+  "clients": "Two Pulse.exe processes under one Windows host",
+  "executableSha256": "b872ab95a79364ba9f944dbe3d06204a470a90e9fb7749fbd794ba87959dec8b",
+  "resources": {},
+  "checks": {
+    "10 hosted cleanup paths free of the old executables and profiles": {
+      "status": "PASS",
+      "ms": 1,
+      "details": {
+        "oldExeAbsent": 2,
+        "oldDataAbsent": 2
+      }
+    },
+    "10 post-clean startup and new profiles": {
+      "status": "FAIL",
+      "ms": 36158,
+      "details": "The spawned Pulse.exe did not expose its isolated WebView2 target.",
+      "testCodeLine": 77
+    },
+    "10 post-clean 1 bidirectional exact nickname": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 2a absent nickname": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 2b directory technical failure": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 3 accepted friendship and online presence": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 4 sign-out and sign-in": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 7 malformed and unknown room codes": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 5 A hosts and B joins by code": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean activated room transport resources": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 6 B hosts and A joins by code": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    },
+    "10 post-clean 8 actual outage, socket recovery and process restart": {
+      "status": "BLOCKED",
+      "details": "Prerequisite failed or requires loopback outage controls."
+    }
+  },
+  "lifecycle": [
+    {
+      "label": "AP",
+      "stopped": "WM_CLOSE"
+    }
+  ],
+  "relay": {
+    "connections": 0,
+    "requests": 0,
+    "exactQueries": 0,
+    "exactEmpty": 0,
+    "exactUnavailable": 0,
+    "profiles": 0,
+    "heartbeats": 0,
+    "offlineEvents": 0,
+    "explicitOfflineAddress": 0,
+    "mail": 0,
+    "roomFrames": 0,
+    "signaling": 0,
+    "badFrame": 0,
+    "disconnects": 0,
+    "authors": 0,
+    "foreignMail": 0,
+    "topicsSeenFromTwoAuthors": 0
+  },
+  "disposableProfilesRemoved": true,
+  "postCleanProfilesRemainInDisposableVm": true,
+  "rendererErrorTypes": {},
+  "finishedAt": "2026-11-21T11:02:34.986Z"
+}

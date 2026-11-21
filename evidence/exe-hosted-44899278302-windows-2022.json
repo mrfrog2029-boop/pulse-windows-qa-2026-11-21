@@ -1,0 +1,493 @@
+{
+  "startedAt": "2026-11-21T11:29:28.459Z",
+  "runId": "bff76a00df",
+  "mode": "loopback",
+  "transport": "relay-only",
+  "clients": "Two Pulse.exe processes under one Windows host",
+  "executableSha256": "b872ab95a79364ba9f944dbe3d06204a470a90e9fb7749fbd794ba87959dec8b",
+  "resources": {
+    "AP": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html; charset=utf-8",
+        "hash": "fc6eecafbeda592403bf6629f0a0ed2ccaffdc41713871285b774262f88d9369",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css; charset=utf-8",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ad45902da3b93d39da9cebe210c89289044d5a37abb131ab46fea7df012868b3",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "9dc4275afbc7827a3a60e1073a382d6ee0bc95db31b5180710b21931b7e7bcef",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "1381707065f666be9b736e9d058fdacf9f096ed5b41b15a178e7b7b664983357",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "4b4f3c615bb27bc98b7170a933fe0e368e648eace302469676fd6d2e26e8ea50",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "69b59595e2bd97cb49fe60987b23df94a0bef02b84c620296ecb686a356cc324",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "6d5829fb2f49fe6b5404bc5b7265609db438e1018fd0a61545121a1524cd5595",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "f40a38f2e57e128703b3062a959a7537aaac52c603f841347ab7a9c8c0f87d71",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/network-diagnostics.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "28484da8490b430cfa25669a8d6fbb1037476783a6ad600ad5a7e923aab206ae",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "buildId": "71446d0e81b0c49e"
+    },
+    "AP after onboarding": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js"
+    ],
+    "BP": {
+      "/index.html": {
+        "status": 200,
+        "mime": "text/html; charset=utf-8",
+        "hash": "fc6eecafbeda592403bf6629f0a0ed2ccaffdc41713871285b774262f88d9369",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/styles.css": {
+        "status": 200,
+        "mime": "text/css; charset=utf-8",
+        "hash": "3c46483e24bd3f377d2a491253e199a60d4f1d15ed48e743be13595c0e15ed44",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/auth.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ad45902da3b93d39da9cebe210c89289044d5a37abb131ab46fea7df012868b3",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/account.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "9dc4275afbc7827a3a60e1073a382d6ee0bc95db31b5180710b21931b7e7bcef",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/net.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "1381707065f666be9b736e9d058fdacf9f096ed5b41b15a178e7b7b664983357",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/network-time.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "4b4f3c615bb27bc98b7170a933fe0e368e648eace302469676fd6d2e26e8ea50",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-7GRP2DEX.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "ac3f9a7029cafa75d11e98031f966bceee616893f277a242e5969df07a8b3178",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/chunk-ITVMY7Q3.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "69b59595e2bd97cb49fe60987b23df94a0bef02b84c620296ecb686a356cc324",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/guard.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "0bf7fb350b8e254cd14c409b89b3efd52db1263b50efba93282040ce58f4ea85",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "/js/room-links.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "8c9e68b7954b263e9f52e96c441ad2d1a98584a5d74623fc07012e43250e0d1c",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-relay.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "6d5829fb2f49fe6b5404bc5b7265609db438e1018fd0a61545121a1524cd5595",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/room-voice.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "f40a38f2e57e128703b3062a959a7537aaac52c603f841347ab7a9c8c0f87d71",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "5b2f9f0800c398026e4ca92cda40a0a01069b42d6f4c504dfbcb9027e97a0934",
+        "cache": "no-store",
+        "loadedByPage": false
+      },
+      "/js/network-diagnostics.js": {
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "hash": "28484da8490b430cfa25669a8d6fbb1037476783a6ad600ad5a7e923aab206ae",
+        "cache": "no-store",
+        "loadedByPage": true
+      },
+      "buildId": "71446d0e81b0c49e"
+    },
+    "BP after onboarding": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js"
+    ],
+    "AP after room entry": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js",
+      "/js/room-voice.js",
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js"
+    ],
+    "BP after room entry": [
+      "/js/account.js",
+      "/js/auth.js",
+      "/js/chunk-7GRP2DEX.js",
+      "/js/chunk-ITVMY7Q3.js",
+      "/js/guard.js",
+      "/js/net.js",
+      "/js/network-diagnostics.js",
+      "/js/network-time.js",
+      "/js/room-links.js",
+      "/js/room-relay.js",
+      "/js/room-voice.js",
+      "/vendor/vdoninja-sdk-1.6.2/vdoninja-sdk.min.js"
+    ]
+  },
+  "checks": {
+    "10 hosted cleanup paths free of the old executables and profiles": {
+      "status": "PASS",
+      "ms": 2,
+      "details": {
+        "oldExeAbsent": 2,
+        "oldDataAbsent": 2
+      }
+    },
+    "10 post-clean startup and new profiles": {
+      "status": "PASS",
+      "ms": 6006,
+      "details": {
+        "distinctProfilesAndSessions": true,
+        "freshProfiles": 2
+      }
+    },
+    "10 post-clean 1 bidirectional exact nickname": {
+      "status": "PASS",
+      "ms": 472,
+      "details": {
+        "A": "found",
+        "B": "found"
+      }
+    },
+    "10 post-clean 2a absent nickname": {
+      "status": "PASS",
+      "ms": 448,
+      "details": {
+        "result": "absent"
+      }
+    },
+    "10 post-clean 2b directory technical failure": {
+      "status": "PASS",
+      "ms": 451,
+      "details": {
+        "result": "technical failure",
+        "relayClosedQuery": true
+      }
+    },
+    "10 post-clean 3 accepted friendship and online presence": {
+      "status": "PASS",
+      "ms": 6650,
+      "details": {
+        "accepted": true,
+        "onlineBothWays": true
+      }
+    },
+    "10 post-clean 4 sign-out and sign-in": {
+      "status": "PASS",
+      "ms": 1046,
+      "details": {
+        "observedOffline": true,
+        "observedOnlineAfterSignIn": true,
+        "signedOfflineEvent": true
+      }
+    },
+    "10 post-clean 7 malformed and unknown room codes": {
+      "status": "PASS",
+      "ms": 12358,
+      "details": {
+        "malformedRejected": true,
+        "unusedValidFormatRejected": true,
+        "roomUiNeverOpened": true
+      }
+    },
+    "10 post-clean 5 A hosts and B joins by code": {
+      "status": "PASS",
+      "ms": 611,
+      "details": {
+        "participantsOnBothClients": 2,
+        "textDirections": 2,
+        "sameRelayRoomTopic": true
+      }
+    },
+    "10 post-clean activated room transport resources": {
+      "status": "PASS",
+      "ms": 8660,
+      "details": {
+        "bothClients": [
+          true,
+          true
+        ]
+      }
+    },
+    "10 post-clean 6 B hosts and A joins by code": {
+      "status": "PASS",
+      "ms": 645,
+      "details": {
+        "participantsOnBothClients": 2,
+        "textDirections": 2,
+        "sameRelayRoomTopic": true,
+        "relayOnly": [
+          {
+            "observed": 5,
+            "direct": false
+          },
+          {
+            "observed": 3,
+            "direct": false
+          }
+        ]
+      }
+    },
+    "10 post-clean 8 actual outage, socket recovery and process restart": {
+      "status": "PASS",
+      "ms": 4185,
+      "details": {
+        "actualSocketClosure": true,
+        "newConnections": 5,
+        "guestProcessChanged": true,
+        "participantsOnBothClients": 2,
+        "textDirections": 2,
+        "shutdownVerified": true,
+        "elapsedToProfileReleaseMs": 213
+      }
+    }
+  },
+  "lifecycle": [
+    {
+      "label": "AP",
+      "pid": 7656,
+      "fresh": true,
+      "privateDesktop": false,
+      "legacyAssetsRoute": false,
+      "cdpArgumentInLauncher": true,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/131.0.2903.86",
+      "browserPid": 980,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "BP",
+      "pid": 1260,
+      "fresh": true,
+      "privateDesktop": false,
+      "legacyAssetsRoute": false,
+      "cdpArgumentInLauncher": true,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/131.0.2903.86",
+      "browserPid": 7244,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "AP",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "AP",
+      "priorPid": 7656,
+      "previousBrowser": [
+        980
+      ],
+      "closeMethod": "WM_CLOSE",
+      "browserPidsAtLauncherExit": [
+        980
+      ],
+      "oldCdpListening": false,
+      "elapsedToProfileReleaseMs": 213,
+      "sameDebugPortOnRestart": true
+    },
+    {
+      "label": "AP",
+      "pid": 7032,
+      "fresh": false,
+      "privateDesktop": false,
+      "legacyAssetsRoute": false,
+      "cdpArgumentInLauncher": true,
+      "cdpEndpointReached": true,
+      "cdpTargets": {
+        "total": 1,
+        "blank": 0,
+        "errors": 0,
+        "app": 1
+      },
+      "cdpHttpStatus": 200,
+      "runtime": "Edg/131.0.2903.86",
+      "browserPid": 8128,
+      "profileCreated": true,
+      "profileArgMatches": true
+    },
+    {
+      "label": "AP",
+      "stopped": "WM_CLOSE"
+    },
+    {
+      "label": "BP",
+      "stopped": "WM_CLOSE"
+    }
+  ],
+  "relay": {
+    "connections": 11,
+    "requests": 64,
+    "exactQueries": 9,
+    "exactEmpty": 5,
+    "exactUnavailable": 1,
+    "profiles": 5,
+    "heartbeats": 6,
+    "offlineEvents": 1,
+    "explicitOfflineAddress": 1,
+    "mail": 3,
+    "roomFrames": 34,
+    "signaling": 78,
+    "badFrame": 0,
+    "disconnects": 1,
+    "authors": 2,
+    "foreignMail": 0,
+    "topicsSeenFromTwoAuthors": 2
+  },
+  "disposableProfilesRemoved": true,
+  "postCleanProfilesRemainInDisposableVm": true,
+  "rendererErrorTypes": {},
+  "finishedAt": "2026-11-21T11:30:11.578Z"
+}
