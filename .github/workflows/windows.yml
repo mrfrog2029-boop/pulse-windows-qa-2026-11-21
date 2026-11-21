@@ -5,8 +5,13 @@ on:
     branches: [main]
     paths:
       - pulse-inputs.zip
-      - .github/workflows/**
-      - ci/**
+      - .github/workflows/windows.yml
+      - ci/prepare-windows.ps1
+      - ci/unpack-inputs.ps1
+      - ci/package*.json
+      - tests/cleanup-hosted*
+      - tests/exe-acceptance.mjs
+      - tests/exe-desktop.cs
 permissions:
   contents: read
   actions: read
@@ -25,7 +30,7 @@ jobs:
       - name: Extract test inputs and attest device and release
         shell: pwsh
         run: |
-          Expand-Archive -LiteralPath .\pulse-inputs.zip -DestinationPath . -Force
+          .\ci\unpack-inputs.ps1
           .\ci\prepare-windows.ps1
       - name: Test the shipping GUI against actual Windows integrations
         id: cleanup

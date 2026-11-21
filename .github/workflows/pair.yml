@@ -1,0 +1,121 @@
+name: Pulse across two Windows machines
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pair.yml
+      - ci/run-remote-pair.ps1
+      - tests/exe-remote-pair*.mjs
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  role:
+    name: Pulse role ${{ matrix.role }} on ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - role: A
+            image: windows-2025
+          - role: B
+            image: windows-2022
+    runs-on: ${{ matrix.image }}
+    timeout-minutes: 25
+    env:
+      PULSE_PAIR_ROLE: ${{ matrix.role }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Extract and verify the exact release
+        shell: pwsh
+        run: |
+          .\ci\unpack-inputs.ps1
+          .\ci\prepare-windows.ps1
+      - name: Start the isolated role and publish its fingerprint
+        shell: pwsh
+        run: .\ci\run-remote-pair.ps1 -Stage Start -Role $env:PULSE_PAIR_ROLE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pulse-pair-identity-${{ github.run_attempt }}-${{ matrix.role }}
+          path: ${{ env.PULSE_PAIR_DIR }}/self.json
+          if-no-files-found: error
+          retention-days: 1
+      - name: Find the other role's fingerprint in this run
+        id: peer
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .\ci\run-remote-pair.ps1 -Stage FindPeer -Role $env:PULSE_PAIR_ROLE
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ steps.peer.outputs.name }}
+          path: ${{ env.PULSE_PAIR_DIR }}/peer-artifact
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.run_id }}
+      - name: Join both rooms and record the result
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: .\ci\run-remote-pair.ps1 -Stage Finish -Role $env:PULSE_PAIR_ROLE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() }}
+        with:
+          name: pulse-pair-result-${{ github.run_attempt }}-${{ matrix.role }}
+          path: |
+            test-runs/device.json
+            test-runs/remote-${{ matrix.role }}.json
+          if-no-files-found: error
+          retention-days: 14
+
+  correlate:
+    name: Verify paired Windows evidence
+    needs: role
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: pulse-pair-result-${{ github.run_attempt }}-*
+          path: pair-evidence
+      - name: Correlate exact release, distinct machines and opposite verified identities
+        shell: bash
+        run: |
+          node <<'NODE'
+          const { appendFileSync, readFileSync } = require('node:fs');
+          const report = role => {
+            try {
+              return JSON.parse(readFileSync(
+                'pair-evidence/pulse-pair-result-' + process.env.GITHUB_RUN_ATTEMPT + '-' + role + '/remote-' + role + '.json', 'utf8'
+              ).replace(/^\uFEFF/, ''));
+            } catch {
+              return { status: 'BLOCKED' };
+            }
+          };
+          const [a, b] = ['A', 'B'].map(report);
+          const correlation = Boolean(a.role === 'A' && b.role === 'B' && a.runId && a.runId === b.runId &&
+            a.hosted && b.hosted && a.architecture === 'x64' && b.architecture === 'x64' &&
+            a.machineFingerprint && b.machineFingerprint &&
+            a.machineFingerprint !== b.machineFingerprint && a.executableSha256 === b.executableSha256 &&
+            a.webView?.buildId && a.webView.buildId === b.webView?.buildId &&
+            a.identityFingerprint && b.identityFingerprint &&
+            a.identityFingerprint === b.peerIdentityFingerprint && b.identityFingerprint === a.peerIdentityFingerprint);
+          const allPassed = a.status === 'PASS' && b.status === 'PASS';
+          const status = allPassed ? (correlation ? 'PASS' : 'FAIL')
+            : ([a.status, b.status].includes('FAIL') ? 'FAIL' : 'BLOCKED');
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, [
+            '## Pulse across distinct Windows VMs', '',
+            '- Overall ' + status, '- Role A ' + a.status, '- Role B ' + b.status,
+            '- Distinct machines, matching builds and reciprocal identities ' + (correlation ? 'PASS' : 'BLOCKED'), '',
+          ].join('\n'));
+          if (status !== 'PASS') process.exitCode = 1;
+          NODE
