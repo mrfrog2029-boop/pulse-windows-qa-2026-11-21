@@ -64,39 +64,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: pulse-pair-result-${{ github.run_attempt }}-*
           path: pair-evidence
       - name: Correlate exact release, distinct machines and opposite verified identities
         shell: bash
-        run: |
-          node <<'NODE'
-          const { appendFileSync, readFileSync } = require('node:fs');
-          const report = role => {
-            try {
-              return JSON.parse(readFileSync(
-                'pair-evidence/pulse-pair-result-' + process.env.GITHUB_RUN_ATTEMPT + '-' + role + '/remote-' + role + '.json', 'utf8'
-              ).replace(/^\uFEFF/, ''));
-            } catch {
-              return { status: 'BLOCKED' };
-            }
-          };
-          const [a, b] = ['A', 'B'].map(report);
-          const correlation = Boolean(a.role === 'A' && b.role === 'B' && a.runId && a.runId === b.runId &&
-            a.hosted && b.hosted && a.architecture === 'x64' && b.architecture === 'x64' &&
-            a.machineFingerprint && b.machineFingerprint &&
-            a.machineFingerprint !== b.machineFingerprint && a.executableSha256 === b.executableSha256 &&
-            a.webView?.buildId && a.webView.buildId === b.webView?.buildId &&
-            a.identityFingerprint && b.identityFingerprint &&
-            a.identityFingerprint === b.peerIdentityFingerprint && b.identityFingerprint === a.peerIdentityFingerprint);
-          const allPassed = a.status === 'PASS' && b.status === 'PASS';
-          const status = allPassed ? (correlation ? 'PASS' : 'FAIL')
-            : ([a.status, b.status].includes('FAIL') ? 'FAIL' : 'BLOCKED');
-          appendFileSync(process.env.GITHUB_STEP_SUMMARY, [
-            '## Pulse across distinct Windows VMs', '',
-            '- Overall ' + status, '- Role A ' + a.status, '- Role B ' + b.status,
-            '- Distinct machines, matching builds and reciprocal identities ' + (correlation ? 'PASS' : 'BLOCKED'), '',
-          ].join('\n'));
-          if (status !== 'PASS') process.exitCode = 1;
-          NODE
+        run: node ./ci/pair-action/verify-reports.mjs pair-evidence

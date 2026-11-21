@@ -1,14 +1,14 @@
-import { execFileSync, spawn } from "node:child_process";
+import { execFile, execFileSync, spawn } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { copyFile, lstat, mkdir, mkdtemp, readFile, realpath, rename, rm, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { createServer } from "node:net";
-import { hostname, release, tmpdir } from "node:os";
+import { release, tmpdir } from "node:os";
 import { basename, dirname, join, resolve, sep } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
-import { parseArgs } from "node:util";
+import { parseArgs, promisify } from "node:util";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const origin = "https://app.pulse.invalid";
@@ -20,6 +20,7 @@ const stageNames = ["Exact native executable", "Disposable signup and relay rece
   "Exact nickname discovery", "Accepted friendship and online presence", "A hosts and B joins",
   "B hosts and A joins", "Targeted traffic"];
 const sha = bytes => createHash("sha256").update(bytes).digest("hex");
+const execute = promisify(execFile);
 const opposite = role => role === "A" ? "B" : "A";
 const alias = (role, runId) => ({ name: "Pulse QA " + role + " " + runId, nick: "qa_" + role.toLowerCase() + "_" + runId });
 
@@ -49,6 +50,37 @@ export function peerRecord(value, runId, role, ownFingerprint) {
     hex.test(value.identityFingerprint) && value.identityFingerprint !== ownFingerprint,
     "Peer fingerprint does not identify the opposite role in this run.");
   return value.identityFingerprint;
+}
+
+export function machineFingerprint(runId, source, identifier) {
+  const uuid = typeof identifier === "string" ? identifier.trim().toLowerCase() : "";
+  if (!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(uuid) ||
+      /^([a-f0-9])\1{31}$/.test(uuid.replaceAll("-", ""))) return null;
+  return sha(JSON.stringify(["pulse-remote-vm-v2", runId, source, uuid]));
+}
+
+export function vmEvidence(a, b) {
+  for (const source of ["azureVmId", "smbiosUuid"]) {
+    if (hex.test(a?.[source] ?? "") && hex.test(b?.[source] ?? "")) {
+      return { source, distinct: a[source] !== b[source] };
+    }
+  }
+  return null;
+}
+
+async function inspectHostedVm(runId) {
+  const data = {
+    azureVmId: ["curl.exe", ["--noproxy", "*", "--max-time", "4", "--fail", "--silent", "-H", "Metadata:true",
+      "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2025-04-07&format=text"]],
+    smbiosUuid: ["powershell.exe", ["-NoProfile", "-NonInteractive", "-Command",
+      "(Get-CimInstance -ClassName Win32_ComputerSystemProduct -Property UUID -ErrorAction Stop).UUID"]],
+  };
+  return Object.fromEntries(await Promise.all(Object.entries(data).map(async ([source, [command, args]]) => {
+    try {
+      const { stdout } = await execute(command, args, { windowsHide: true, timeout: 6000, maxBuffer: 4096 });
+      return [source, machineFingerprint(runId, source, stdout)];
+    } catch { return [source, null]; }
+  })));
 }
 
 async function waitFor(work, milliseconds, message, status = "FAIL") {
@@ -490,10 +522,10 @@ async function main() {
   const owner = alias(options.role, options["run-id"]);
   const other = alias(opposite(options.role), options["run-id"]);
   const exchange = resolve(options["exchange-dir"]);
+  const hosted = process.env.GITHUB_ACTIONS === "true" && process.env.RUNNER_ENVIRONMENT === "github-hosted";
   const report = { schema: 1, startedAt: new Date().toISOString(), role: options.role, runId: options["run-id"],
     mode: fixture ? "local-loopback" : "public-default-relays", executableSha256: options.sha256,
-    machineFingerprint: sha(JSON.stringify(["pulse-remote-host-v1", options["run-id"], hostname()])),
-    hosted: process.env.RUNNER_ENVIRONMENT === "github-hosted", windowsRelease: release(),
+    machineIdentities: hosted ? await inspectHostedVm(options["run-id"]) : null, hosted, windowsRelease: release(),
     architecture: process.arch, checks: {} };
   let activeStage = stageNames[0];
   let scratch;
