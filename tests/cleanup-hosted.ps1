@@ -14,8 +14,8 @@ if ($env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_ENVIRONMENT -cne 'github-hos
     throw 'This test requires a disposable x64 GitHub-hosted runner.'
 }
 $os = Get-CimInstance Win32_OperatingSystem
-if ($os.ProductType -ne 3 -or $os.Caption -notmatch '2025' -or [int]$os.BuildNumber -lt 26100) {
-    throw 'This test requires the Windows Server 2025 hosted runner.'
+if ($os.ProductType -ne 3 -or $os.Caption -notmatch 'Windows Server (2022|2025)' -or [int]$os.BuildNumber -lt 20348) {
+    throw 'This test requires a Windows Server 2022 or 2025 hosted runner.'
 }
 if ([Threading.Thread]::CurrentThread.ApartmentState -ne 'STA' -or $PSVersionTable.PSEdition -ne 'Desktop') {
     throw 'Launch this test with Windows PowerShell and -STA.'
@@ -141,6 +141,25 @@ function Set-Link([string] $path, [string] $image) {
     finally { [void] [Runtime.InteropServices.Marshal]::ReleaseComObject($shell) }
 }
 
+function Task-Fingerprint([string] $name) {
+    $definition = Export-ScheduledTask -TaskName $name
+    $hash = [Security.Cryptography.SHA256]::Create()
+    try { return [Convert]::ToBase64String($hash.ComputeHash($utf8.GetBytes($definition))) }
+    finally { $hash.Dispose() }
+}
+
+function Save-EmbeddedResource($assembly, [string] $name, [string] $destination) {
+    Protect-Path $destination
+    New-TestDirectory ([IO.Path]::GetDirectoryName($destination))
+    $stream = $assembly.GetManifestResourceStream($name)
+    try {
+        $file = [IO.File]::Create($destination)
+        try { $stream.CopyTo($file) }
+        finally { $file.Dispose() }
+    }
+    finally { $stream.Dispose() }
+}
+
 function Start-OwnedProcess([string] $image, [switch] $disableExternalNetwork) {
     $info = New-Object Diagnostics.ProcessStartInfo($image)
     $info.UseShellExecute = $false
@@ -216,12 +235,69 @@ function Hide-RunnerPaths([string] $value) {
     return $value.Replace($project, '<checkout>')
 }
 
-function Selected-Rows([string] $reportText, [string] $category, [string] $targetPattern) {
+function Selected-Rows([string] $reportText, [string] $category, [string] $targetPattern, [string] $relativeTo = '') {
     foreach ($line in $reportText -split '\r?\n') {
         $column = $line -split '\t', 4
         if ($column.Length -eq 4 -and $column[1] -match $category -and $column[2] -match $targetPattern) {
-            [pscustomobject]@{ status = $column[0]; target = Hide-RunnerPaths $column[2]; detail = Hide-RunnerPaths $column[3] }
+            $target = if ($relativeTo) { $column[2].Substring($relativeTo.Length).TrimStart('\') } else { Hide-RunnerPaths $column[2] }
+            [pscustomobject]@{ status = $column[0]; category = $column[1]; target = $target; detail = Hide-RunnerPaths $column[3] }
         }
+    }
+}
+
+function Runtime-State($installation, [string] $previewText, [string] $resultText) {
+    $scope = [regex]::Escape($installation.folder)
+    $pattern = '^' + $scope + '(?:\\|$)'
+    $preview = @(Selected-Rows $previewText '.' $pattern $installation.folder | Select-Object -First 200)
+    $after = @(Selected-Rows $resultText '.' $pattern $installation.folder | Select-Object -First 200)
+    $hasData = Test-Path -LiteralPath $installation.data
+    $hasWebView = Test-Path -LiteralPath (Join-Path $installation.data 'WebView')
+    $entries = New-Object 'System.Collections.Generic.List[object]'
+    $pending = New-Object 'System.Collections.Generic.Queue[string]'
+    if ($hasData) { $pending.Enqueue($installation.data) }
+    $limit = 200
+    while ($pending.Count -gt 0 -and $entries.Count -lt $limit) {
+        $path = $pending.Dequeue()
+        $relative = $path.Substring($installation.folder.Length).TrimStart('\')
+        $kind = 'unknown'
+        $readError = ''
+        try {
+            $item = Get-Item -LiteralPath $path -Force
+            if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+                $kind = 'reparse'
+            } elseif ($item.PSIsContainer) {
+                $kind = 'directory'
+                foreach ($child in Get-ChildItem -LiteralPath $path -Force | Select-Object -First ($limit + 1)) {
+                    if ($entries.Count + $pending.Count -gt $limit) { break }
+                    $pending.Enqueue($child.FullName)
+                }
+            } else { $kind = 'file' }
+        } catch {
+            $kind = 'unreadable'
+            $readError = Hide-RunnerPaths $_.Exception.Message
+        }
+
+        $reasons = @($after | Where-Object {
+            $_.status -in @('Не проверено', 'Осталось', 'Сохранено') -and $_.detail -and
+            ($relative -eq $_.target -or ($_.target -and $relative.StartsWith($_.target + '\', [StringComparison]::OrdinalIgnoreCase)))
+        } | Sort-Object { $_.target.Length } -Descending | Select-Object -First 1)
+        $reason = if ($reasons.Count -gt 0) { $reasons[0].detail } else { '' }
+        $reportedPath = if ($reasons.Count -gt 0) { $reasons[0].target } else { '' }
+        $entries.Add([pscustomobject]@{
+            path = $relative
+            kind = $kind
+            reason = $reason
+            reportedPath = $reportedPath
+            readError = $readError
+        })
+    }
+    return [pscustomobject]@{
+        dataPresent = $hasData
+        webViewPresent = $hasWebView
+        preview = $preview
+        after = $after
+        residues = $entries.ToArray()
+        capped = $pending.Count -gt 0
     }
 }
 
@@ -324,6 +400,7 @@ try {
         Register-ScheduledTask -TaskName $otherTaskName -Action (New-ScheduledTaskAction -Execute $otherImage) -User $taskUser | Out-Null
         $confirmedTaskBefore = Get-ScheduledTask -TaskName $taskName
         $taskActionExact = @($confirmedTaskBefore.Actions).Count -eq 1 -and $confirmedTaskBefore.Actions[0].Execute -eq $b.image
+        $unrelatedTaskBefore = Task-Fingerprint $otherTaskName
         $taskPair = $true
     } catch { Blocked 'Windows scheduled tasks' 'The hosted runner could not create both disposable tasks.' }
 
@@ -357,6 +434,26 @@ try {
     Verify-DeleteError $denied 5
 
     $otherProcess = Start-OwnedProcess $otherImage
+    $foreignBrowserHost = $null
+    $foreignBrowserChildren = @()
+    try {
+        $foreignBrowserFolder = Join-Path $fixture 'unrelated\Independent Browser'
+        New-TestDirectory $foreignBrowserFolder
+        $foreignBrowserHostImage = Join-Path $foreignBrowserFolder 'IndependentBrowser.exe'
+        $browserCore = Join-Path $foreignBrowserFolder 'Microsoft.Web.WebView2.Core.dll'
+        $browserUi = Join-Path $foreignBrowserFolder 'Microsoft.Web.WebView2.WinForms.dll'
+        Save-EmbeddedResource $baselineAssembly 'lib.Core.dll' $browserCore
+        Save-EmbeddedResource $baselineAssembly 'lib.WinForms.dll' $browserUi
+        [IO.File]::WriteAllBytes((Join-Path $foreignBrowserFolder 'WebView2Loader.dll'), $loaderBytes)
+        & $compiler /nologo /target:winexe /platform:x64 /define:INDEPENDENT_WEBVIEW /r:System.Windows.Forms.dll /r:System.Drawing.dll "/r:$browserCore" "/r:$browserUi" "/out:$foreignBrowserHostImage" (Join-Path $PSScriptRoot 'cleanup-test-process.cs')
+        Need ($LASTEXITCODE -eq 0) 'Could not compile the unrelated WebView2 host.'
+        $foreignBrowserHost = Start-OwnedProcess $foreignBrowserHostImage -DisableExternalNetwork
+        $foreignBrowserHostPid = $foreignBrowserHost.Id
+        $foreignBrowserChildren = @(Wait-Until {
+            Get-CimInstance Win32_Process -Filter "ParentProcessId = $foreignBrowserHostPid AND Name = 'msedgewebview2.exe'" |
+                Select-Object ProcessId, ExecutablePath, CreationDate
+        } 'The unrelated host did not start its independent WebView2 profile.' 18)
+    } catch { Blocked 'Unrelated actual WebView2 child is preserved' (Hide-RunnerPaths $_.Exception.Message) }
     $pulseProcess = Start-OwnedProcess $live.image -DisableExternalNetwork
     $pulseId = $pulseProcess.Id
     $browserChildren = @()
@@ -400,19 +497,21 @@ try {
         $taskTarget = '\' + $taskName
         $confirmedTaskAbsent = $null -eq (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue)
         $unrelatedTaskPresent = $null -ne (Get-ScheduledTask -TaskName $otherTaskName -ErrorAction SilentlyContinue)
+        $unrelatedTaskUnchanged = $unrelatedTaskPresent -and (Task-Fingerprint $otherTaskName) -ceq $unrelatedTaskBefore
         $taskPattern = '^(?:\\(?: / \d+)?|Библиотека планировщика)$|Pulse\.HostedFixture\.'
         $observations.taskScheduler = [ordered]@{
             exactExecutableRegistered = $taskActionExact
             confirmedTaskAbsent = $confirmedTaskAbsent
             unrelatedTaskPresent = $unrelatedTaskPresent
+            unrelatedTaskUnchanged = $unrelatedTaskUnchanged
             plannedInPreview = Has-Row $preview 'К удалению' $taskTarget
             removalInReport = Has-Row $first 'Выполнено' $taskTarget
             preview = @(Selected-Rows $preview 'задач|планиров' $taskPattern | Select-Object -First 20)
             after = @(Selected-Rows $first 'задач|планиров' $taskPattern | Select-Object -First 20)
         }
         Check 'Windows scheduled tasks' (
-            $confirmedTaskAbsent -and $unrelatedTaskPresent -and $observations.taskScheduler.removalInReport
-        ) "Confirmed task absent $confirmedTaskAbsent, unrelated task present $unrelatedTaskPresent, report recorded removal $($observations.taskScheduler.removalInReport)."
+            $confirmedTaskAbsent -and $unrelatedTaskUnchanged -and $observations.taskScheduler.removalInReport
+        ) "Confirmed task absent $confirmedTaskAbsent, unrelated task unchanged $unrelatedTaskUnchanged, report recorded removal $($observations.taskScheduler.removalInReport)."
     }
     if ($servicePair) {
         Check 'Windows service registration' (
@@ -433,6 +532,22 @@ try {
     ) (
         "Disposable baseline process was live before cleanup and its PID appeared in the report."
     )
+    $observations.runtimeProfileFirst = Runtime-State $live $preview $first
+    if ($foreignBrowserChildren.Count -gt 0) {
+        $foreignPreserved = !$foreignBrowserHost.HasExited
+        $foreignUntargeted = $true
+        foreach ($child in $foreignBrowserChildren) {
+            $foreignPid = $child.ProcessId
+            $liveChild = Get-CimInstance Win32_Process -Filter "ProcessId = $foreignPid"
+            $foreignPreserved = $foreignPreserved -and $null -ne $liveChild -and $liveChild.CreationDate -eq $child.CreationDate
+            $target = "$($child.ExecutablePath) (PID $foreignPid)"
+            $foreignUntargeted = $foreignUntargeted -and
+                !(Has-Row $preview 'К удалению' $target) -and !(Has-Row $first 'Выполнено' $target)
+        }
+        Check 'Unrelated actual WebView2 child is preserved' ($foreignPreserved -and $foreignUntargeted) (
+            "Independent native child remained $foreignPreserved and absent from cleanup plan and removal report $foreignUntargeted."
+        )
+    }
     if ($browserChildren.Count -gt 0) {
         $browserIds = @($browserChildren | Select-Object -ExpandProperty ProcessId)
         $survivors = @(Get-Process -Id $browserIds -ErrorAction SilentlyContinue)
@@ -453,20 +568,41 @@ try {
                 foreach ($child in $browserChildren) {
                     $profileArgument = [regex]::Match([string]$child.CommandLine, '(?i)--user-data-dir=(?:"([^"]+)"|([^"\s]+))')
                     $profile = if ($profileArgument.Groups[1].Success) { $profileArgument.Groups[1].Value } else { $profileArgument.Groups[2].Value }
+                    $layout = if (!$profileArgument.Success) { 'missing' } elseif ($profile -eq $expectedProfile) {
+                        'api-profile-root'
+                    } elseif ($profile -eq (Join-Path $expectedProfile 'EBWebView')) {
+                        'chromium-ebwebview'
+                    } elseif ($profile.StartsWith($expectedProfile + '\', [StringComparison]::OrdinalIgnoreCase)) {
+                        'other-leaf-in-profile'
+                    } else { 'other-profile' }
                     $version = if ($child.ExecutablePath) { [Diagnostics.FileVersionInfo]::GetVersionInfo($child.ExecutablePath) }
                     $createdUtc = if ($child.CreationDate) { $child.CreationDate.ToUniversalTime().ToString('o') }
                     $productName = if ($version) { $version.ProductName }
                     $originalFilename = if ($version) { $version.OriginalFilename }
                     $companyName = if ($version) { $version.CompanyName }
+                    $runtimeCreatedUtc = $null
+                    $runtimeWrittenUtc = $null
+                    $runtimeLinks = $null
+                    if ($child.ExecutablePath -and (Test-Path -LiteralPath $child.ExecutablePath -PathType Leaf)) {
+                        $runtimeFile = Get-Item -LiteralPath $child.ExecutablePath
+                        $runtimeCreatedUtc = $runtimeFile.CreationTimeUtc.ToString('o')
+                        $runtimeWrittenUtc = $runtimeFile.LastWriteTimeUtc.ToString('o')
+                        $hardlinks = @(& fsutil.exe hardlink list $child.ExecutablePath 2>$null)
+                        if ($LASTEXITCODE -eq 0) { $runtimeLinks = $hardlinks.Count }
+                    }
                     [pscustomobject]@{
                         pid = $child.ProcessId
                         createdUtc = $createdUtc
                         image = Hide-RunnerPaths $child.ExecutablePath
                         hasUserDataArgument = $profileArgument.Success
                         profileMatchesFixture = $profile -eq $expectedProfile
+                        fixtureProfileLayout = $layout
                         productName = $productName
                         originalFilename = $originalFilename
                         companyName = $companyName
+                        runtimeHardLinks = $runtimeLinks
+                        runtimeCreatedUtc = $runtimeCreatedUtc
+                        runtimeWrittenUtc = $runtimeWrittenUtc
                     }
                 }
             )
@@ -485,6 +621,8 @@ try {
 
     Release-Faults
     Set-RunHint 'Pulse Hosted Fixture Busy' $busy.image
+    $retryRuntime = Test-Path -LiteralPath $live.image -PathType Leaf
+    if ($retryRuntime) { Set-RunHint 'Pulse Hosted Fixture Runtime' $live.image }
     $search = Ui-Control $window 'Повторить поиск'
     [HostedCleanupUi]::Click($search)
     $retryPlan = Gui-Report $window 'Проверьте найденные экземпляры'
@@ -494,6 +632,12 @@ try {
         (Gone $locked) -and (Gone $denied) -and (Gone $busy.image) -and
         (Has-Row $retry 'Выполнено' $locked) -and (Has-Row $retry 'Выполнено' $denied)
     ) 'The same release rescanned the disposable installation after its Run hint was restored, then removed the old residuals.'
+    $runtimeLast = if ($retryRuntime) { Runtime-State $live $retryPlan $retry } else { $observations.runtimeProfileFirst }
+    $observations.runtimeProfileLast = $runtimeLast
+    $unexplained = @($runtimeLast.residues | Where-Object { $_.kind -ne 'directory' -and !$_.reason })
+    Check 'Actual runtime profile removal or reported preservation' (
+        !$runtimeLast.dataPresent -or ($runtimeLast.after.Count -gt 0 -and $unexplained.Count -eq 0)
+    ) "Runtime data remains $($runtimeLast.dataPresent), observed residues $($runtimeLast.residues.Count), unexplained non-directory entries $($unexplained.Count), capped $($runtimeLast.capped)."
 
     [HostedCleanupUi]::Click($search)
     [void] (Gui-Report $window 'В проверенных областях')
@@ -514,13 +658,16 @@ finally {
     try { Release-Faults }
     catch { Check 'Restore temporary test ACL' $false 'The generated Windows fixture ACL could not be restored.' }
     foreach ($process in $workers) {
-        try { if (!$process.HasExited) { $process.Kill(); [void] $process.WaitForExit(4000) } }
+        try {
+            if (!$process.HasExited -and $process.CloseMainWindow()) { [void] $process.WaitForExit(1500) }
+            if (!$process.HasExited) { $process.Kill(); [void] $process.WaitForExit(4000) }
+        }
         catch { Check 'Stop own test process' $false 'A harness-owned process could not be stopped.' }
         finally { $process.Dispose() }
     }
     [void] [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($reportPath))
     $result = [pscustomobject] @{
-        environment = 'GitHub-hosted windows-2025 x64'
+        environment = "GitHub-hosted $($os.Caption) x64"
         windowsBuild = [int]$os.BuildNumber
         cleanupSha256 = $cleanupHash
         pulseSha256 = $pulseHash

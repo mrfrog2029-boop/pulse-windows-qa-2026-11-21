@@ -201,13 +201,11 @@ function webArgs() {
   return args;
 }
 
-function inspectBrowserChild(pid, port) {
+function inspectBrowserChild(pid, port, profile) {
   try {
-    const query = `@($owned = @(Get-CimInstance Win32_Process -Filter "ParentProcessId = ${pid} AND Name = 'msedgewebview2.exe'"); ` +
-      `[pscustomobject]@{childCount=$owned.Count; commandLines=@($owned | Where-Object CommandLine).Count; ` +
-      `debugPortConfigured=@($owned | Where-Object CommandLine -Match '--remote-debugging-port=${port}( |$)').Count}) | ConvertTo-Json -Compress`;
-    const result = execFileSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", query],
-      { encoding: "utf8", timeout: 8000, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] });
+    const result = execFileSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+      "-File", join(here, "exe-inspect.ps1"), "-PulsePid", String(pid), "-DebugPort", String(port), "-Profile", profile],
+    { encoding: "utf8", timeout: 12000, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] });
     return JSON.parse(result);
   } catch (error) { return { error: error.name }; }
 }
@@ -267,7 +265,7 @@ async function launch(peer, { legacyRoot, fresh = false } = {}) {
         } catch { return false; }
       });
     } catch (error) {
-      observation.webViewChildren = inspectBrowserChild(peer.pid, port);
+      observation.webViewChildren = inspectBrowserChild(peer.pid, port, profile);
       console.log("NATIVE START", JSON.stringify(observation));
       throw error;
     }

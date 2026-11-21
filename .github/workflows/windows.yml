@@ -17,8 +17,18 @@ permissions:
   actions: read
 jobs:
   cleanup:
-    name: Production cleanup and reinstall on Windows Server 2025 x64
-    runs-on: windows-2025
+    name: ${{ matrix.title }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: windows-2022
+            title: Cleanup, reinstall and two clients on Windows Server 2022 x64
+            reinstall: true
+          - image: windows-2025
+            title: Cleanup and Windows integrations on Windows Server 2025 x64
+            reinstall: false
+    runs-on: ${{ matrix.image }}
     timeout-minutes: 32
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -39,7 +49,7 @@ jobs:
           powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\tests\cleanup-hosted.ps1 -CleanupExe .\release\Pulse-Cleanup.exe -PulseExe .\release\Pulse.exe -Report .\test-runs\cleanup-hosted.json
           exit $LASTEXITCODE
       - name: Reinstall the exact release and connect two new accounts
-        if: ${{ !cancelled() && steps.cleanup.outcome != 'skipped' }}
+        if: ${{ !cancelled() && matrix.reinstall && steps.cleanup.outcome != 'skipped' }}
         shell: pwsh
         run: |
           $evidence = Get-Content -Raw -LiteralPath .\test-runs\cleanup-hosted.json | ConvertFrom-Json
@@ -50,7 +60,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ !cancelled() }}
         with:
-          name: windows-cleanup-and-reinstall-${{ github.run_attempt }}
+          name: cleanup-${{ matrix.image }}-${{ github.run_attempt }}
           path: |
             test-runs/device.json
             test-runs/cleanup-hosted.json
