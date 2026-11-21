@@ -596,13 +596,27 @@ namespace PulseCleanup
                     try
                     {
                         bool documentedReadme = WebViewLayout.IsRuntimeReadme(relative, entry.Name);
-                        using (var file = documentedReadme ? SafePath.Open(path, false, false) : SafePath.ProbeFile(path))
+                        bool noVarySearch = WebViewLayout.IsNoVarySearchCache(relative, entry.Name);
+                        bool checkContents = documentedReadme || noVarySearch;
+                        using (var file = checkContents ? SafePath.Open(path, false, false) : SafePath.ProbeFile(path))
                         {
                             string hash = documentedReadme && file.Stamp.Size <= 1024 ? file.Sha256() : null;
                             if (documentedReadme && hash != WebViewLayout.RuntimeReadmeHash)
                             {
                                 report.Unchecked(ProfileCategory, path, "Содержимое README отличается от штатного README WebView2.");
                                 continue;
+                            }
+                            if (noVarySearch)
+                            {
+                                using (var stream = file.Read())
+                                {
+                                    if (!WebViewLayout.HasNoVarySearchHeader(entry.Name, stream))
+                                    {
+                                        report.Unchecked(ProfileCategory, path, "Заголовок файла не соответствует формату Chromium No-Vary-Search.");
+                                        continue;
+                                    }
+                                }
+                                hash = file.Sha256();
                             }
                             var item = new FileWork(ProfileCategory, path, "Распознанный служебный объект выделенного профиля.",
                                 file.Stamp, false, hash);

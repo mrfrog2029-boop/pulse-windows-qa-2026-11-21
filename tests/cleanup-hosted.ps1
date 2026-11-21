@@ -148,9 +148,12 @@ function Task-Fingerprint([string] $name) {
     finally { $hash.Dispose() }
 }
 
-function Query-ServiceState([string] $name) {
-    Need ($name -match '^PulseHostedFixture(?:Confirmed|Unrelated)$') 'The harness can only query its disposable services.'
-    $info = New-Object Diagnostics.ProcessStartInfo((Join-Path $env:WINDIR 'System32\sc.exe'), "query $name")
+function Invoke-FixtureSc([string[]] $scArguments) {
+    Need ($scArguments.Count -ge 2 -and $scArguments[0] -in 'create','query','qc' -and
+        $scArguments[1] -match '^PulseHostedFixture(?:Confirmed|Unrelated)$') 'The harness can only access its two disposable services.'
+    # Preserve literal double quotes around the BinaryPathName on Windows PowerShell.
+    $commandLine = ($scArguments | ForEach-Object { '"' + (($_ -replace '(\\*)"', '$1$1\"') -replace '(\\+)$', '$1$1') + '"' }) -join ' '
+    $info = New-Object Diagnostics.ProcessStartInfo((Join-Path $env:WINDIR 'System32\sc.exe'), $commandLine)
     $info.UseShellExecute = $false
     $info.CreateNoWindow = $true
     $info.RedirectStandardOutput = $true
@@ -160,14 +163,17 @@ function Query-ServiceState([string] $name) {
         $output = $query.StandardOutput.ReadToEndAsync()
         $errors = $query.StandardError.ReadToEndAsync()
         if (!$query.WaitForExit(6000)) { $query.Kill(); throw 'The native service query did not return.' }
-        [void] $output.GetAwaiter().GetResult()
         [void] $errors.GetAwaiter().GetResult()
-        $code = $query.ExitCode
+        return [pscustomobject]@{ code = $query.ExitCode; output = $output.GetAwaiter().GetResult() }
     }
     finally { $query.Dispose() }
+}
+
+function Query-ServiceState([string] $name) {
+    $query = Invoke-FixtureSc @('query', $name)
     $key = 'HKLM:\SYSTEM\CurrentControlSet\Services\' + $name
     return [pscustomobject]@{
-        queryCode = $code
+        queryCode = $query.code
         registryKeyPresent = Test-Path -LiteralPath $key
         deleteFlag = Get-RegValue $key 'DeleteFlag'
     }
@@ -175,9 +181,20 @@ function Query-ServiceState([string] $name) {
 
 function New-DisabledFixtureService([string] $name, [string] $image) {
     Need ((Query-ServiceState $name).queryCode -eq 1060) "The test service was not initially absent: $name"
-    $service = New-Service -Name $name -BinaryPathName ('"' + $image + '"') -StartupType Disabled
-    try { Need ($service.ServiceName -eq $name) 'The test received an unexpected ServiceController.' }
-    finally { $service.Dispose() }
+    $quotedImage = '"' + $image + '"'
+    $created = Invoke-FixtureSc @('create', $name, 'binPath=', $quotedImage, 'start=', 'disabled')
+    Need ($created.code -eq 0) "The disposable service creation failed with Win32 code $($created.code)."
+    $configuration = Invoke-FixtureSc @('qc', $name)
+    Need ($configuration.code -eq 0) "The disposable service configuration query failed with Win32 code $($configuration.code)."
+    $key = 'HKLM:\SYSTEM\CurrentControlSet\Services\' + $name
+    $imagePath = Get-RegValue $key 'ImagePath'
+    Need ($imagePath -eq $quotedImage -or $imagePath -eq $image) 'The configured executable does not equal the fixture image.'
+    $consolePath = [regex]::Match($configuration.output, '(?m)^\s*BINARY_PATH_NAME\s*:\s*([^\r\n]+)')
+    if ($consolePath.Success) {
+        $recorded = $consolePath.Groups[1].Value.Trim()
+        Need ($recorded -eq $quotedImage -or $recorded -eq $image) 'The SCM executable query does not equal the fixture image.'
+    }
+    Need ((Get-RegValue $key 'Start') -eq 4) 'The disposable service was not disabled.'
 }
 
 function Save-EmbeddedResource($assembly, [string] $name, [string] $destination) {
@@ -702,6 +719,9 @@ try {
     Check 'Actual runtime profile removal or reported preservation' (
         !$runtimeLast.dataPresent -or ($runtimeLast.after.Count -gt 0 -and $unexplained.Count -eq 0)
     ) "Runtime data remains $($runtimeLast.dataPresent), observed residues $($runtimeLast.residues.Count), unexplained non-directory entries $($unexplained.Count), capped $($runtimeLast.capped)."
+    Check 'Actual dedicated runtime profile fully removed' (
+        !$runtimeLast.dataPresent -and !$runtimeLast.webViewPresent -and $runtimeLast.residues.Count -eq 0
+    ) "Dedicated runtime data remains $($runtimeLast.dataPresent), directory entries $($runtimeLast.residues.Count)."
 
     [HostedCleanupUi]::Click($search)
     [void] (Gui-Report $window 'В проверенных областях')

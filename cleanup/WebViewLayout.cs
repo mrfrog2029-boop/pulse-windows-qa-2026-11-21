@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace PulseCleanup
@@ -115,6 +116,7 @@ namespace PulseCleanup
             if (inside != null)
             {
                 if (Array.Exists(LevelDbProfileDirectories, value => Comparer.Equals(value, inside))) return LevelDb(name);
+                if (IsNoVarySearchCache(parent, name)) return true;
                 if (CacheProfileDirectories.Contains(inside)) return IsCache(name);
                 if (Comparer.Equals(inside, @"Cache\Cache_Data") && Comparer.Equals(name, "index")) return true;
                 if (Comparer.Equals(inside, "Network") || Comparer.Equals(inside, "Safe Browsing Network"))
@@ -154,6 +156,29 @@ namespace PulseCleanup
         internal static bool IsRuntimeReadme(string parent, string name)
         {
             return Comparer.Equals(parent, Profile) && Comparer.Equals(name, "README");
+        }
+
+        internal static bool IsNoVarySearchCache(string parent, string name)
+        {
+            return Comparer.Equals(parent, Profile + @"\Cache\No_Vary_Search") &&
+                (Comparer.Equals(name, "journal.baj") || Comparer.Equals(name, "snapshot.baf"));
+        }
+
+        internal static bool HasNoVarySearchHeader(string name, Stream contents)
+        {
+            if (contents.Length < 4 || contents.Length > 100L * 1024 * 1024) return false;
+            uint header = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                int next = contents.ReadByte();
+                if (next < 0) return false;
+                header = (header << 8) | (uint)next;
+            }
+            if (Comparer.Equals(name, "journal.baj"))
+                return header == 0x984B3C4Du || header == 0x24467E06u;
+            if (Comparer.Equals(name, "snapshot.baf"))
+                return header == 0x4B17C1EEu || header == 0x62F965CEu;
+            return false;
         }
 
         private static bool LevelDb(string name)

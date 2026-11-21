@@ -10,6 +10,8 @@ namespace PulseCleanup
 {
     internal static class DeferredProfileTests
     {
+        private const string NoVarySearch = @"EBWebView\Default\Cache\No_Vary_Search";
+
         private sealed class Specimen
         {
             internal string Install, Data, WebView, Table, Config;
@@ -45,7 +47,15 @@ namespace PulseCleanup
             var redirected = Create(installs, "redirected", payload, loader, false);
             var blocked = Create(installs, "blocked", payload, loader, false);
             var changed = Create(installs, "changed-data", payload, loader, false);
-            var cases = new[] { clean, mixed, replaced, redirected, blocked, changed };
+            var neighbors = Create(installs, "cache-canaries", payload, loader, false);
+            string journal = WriteCacheFile(clean, NoVarySearch, "journal.baj", 0x24, 0x46, 0x7e, 0x06);
+            string snapshot = WriteCacheFile(clean, NoVarySearch, "snapshot.baf", 0x62, 0xf9, 0x65, 0xce, 0, 0, 0, 0);
+            string legacyJournal = WriteCacheFile(neighbors, NoVarySearch, "journal.baj", 0x98, 0x4b, 0x3c, 0x4d);
+            string wrongHeader = WriteCacheFile(neighbors, NoVarySearch, "snapshot.baf", 0x24, 0x46, 0x7e, 0x06);
+            string wrongName = WriteCacheFile(neighbors, NoVarySearch, "snapshot.baf.bak", 0x62, 0xf9, 0x65, 0xce);
+            string wrongFolder = WriteCacheFile(neighbors, @"EBWebView\Default\Cache", "journal.baj", 0x24, 0x46, 0x7e, 0x06);
+            string mixedCache = WriteCacheFile(mixed, NoVarySearch, "snapshot.baf", 0x62, 0xf9, 0x65, 0xce);
+            var cases = new[] { clean, mixed, replaced, redirected, blocked, changed, neighbors };
 
             var engine = new CleanupEngine(root);
             CleanupPlan plan;
@@ -78,6 +88,13 @@ namespace PulseCleanup
             plan.BlockWebView(blocked.WebView);
 
             var report = engine.Apply(plan);
+            foreach (string file in new[] { journal, snapshot, legacyJournal })
+                Require(!File.Exists(file) && report.Lines.Any(line => line.Status == "removed" &&
+                    SafePath.Comparer.Equals(line.Target, file)), "Expected a confirmed No-Vary-Search cache file to be removed.");
+            foreach (string file in new[] { wrongHeader, wrongName, wrongFolder })
+                Require(File.Exists(file) && report.Lines.Any(line => line.Status == "unchecked" &&
+                    SafePath.Comparer.Equals(line.Target, file)), "A No-Vary-Search lookalike was not preserved and reported.");
+            Require(File.Exists(mixedCache), "A No-Vary-Search cache in a mixed profile was changed.");
             Require(!Directory.Exists(clean.Data) && !File.Exists(clean.Config) &&
                 !File.Exists(Path.Combine(clean.Install, "Pulse.exe")), "Expected verified profile and window INI to be removed.");
             Require(report.Lines.Any(line => line.Status == "removed" && SafePath.Comparer.Equals(line.Target, clean.Table)),
@@ -91,6 +108,16 @@ namespace PulseCleanup
             Require(File.Exists(blocked.Table) && File.Exists(changed.Table) && File.Exists(changed.Config),
                 "A blocked profile or changed data selection was acted on.");
             Console.WriteLine("PASS: deferred profile, window settings, mixed storage, replacement, junction and process/data gates");
+            Console.WriteLine("PASS: exact No-Vary-Search cache names and format under a dedicated profile");
+        }
+
+        private static string WriteCacheFile(Specimen specimen, string relative, string name, params byte[] contents)
+        {
+            string directory = Path.Combine(specimen.WebView, relative);
+            Directory.CreateDirectory(directory);
+            string file = Path.Combine(directory, name);
+            File.WriteAllBytes(file, contents);
+            return file;
         }
 
         private static Specimen Create(string installs, string name, byte[] payload, byte[] loader, bool mixed)
