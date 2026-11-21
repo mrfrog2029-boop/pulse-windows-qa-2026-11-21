@@ -148,6 +148,38 @@ function Task-Fingerprint([string] $name) {
     finally { $hash.Dispose() }
 }
 
+function Query-ServiceState([string] $name) {
+    Need ($name -match '^PulseHostedFixture(?:Confirmed|Unrelated)$') 'The harness can only query its disposable services.'
+    $info = New-Object Diagnostics.ProcessStartInfo((Join-Path $env:WINDIR 'System32\sc.exe'), "query $name")
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    $info.RedirectStandardOutput = $true
+    $info.RedirectStandardError = $true
+    $query = [Diagnostics.Process]::Start($info)
+    try {
+        $output = $query.StandardOutput.ReadToEndAsync()
+        $errors = $query.StandardError.ReadToEndAsync()
+        if (!$query.WaitForExit(6000)) { $query.Kill(); throw 'The native service query did not return.' }
+        [void] $output.GetAwaiter().GetResult()
+        [void] $errors.GetAwaiter().GetResult()
+        $code = $query.ExitCode
+    }
+    finally { $query.Dispose() }
+    $key = 'HKLM:\SYSTEM\CurrentControlSet\Services\' + $name
+    return [pscustomobject]@{
+        queryCode = $code
+        registryKeyPresent = Test-Path -LiteralPath $key
+        deleteFlag = Get-RegValue $key 'DeleteFlag'
+    }
+}
+
+function New-DisabledFixtureService([string] $name, [string] $image) {
+    Need ((Query-ServiceState $name).queryCode -eq 1060) "The test service was not initially absent: $name"
+    $service = New-Service -Name $name -BinaryPathName ('"' + $image + '"') -StartupType Disabled
+    try { Need ($service.ServiceName -eq $name) 'The test received an unexpected ServiceController.' }
+    finally { $service.Dispose() }
+}
+
 function Save-EmbeddedResource($assembly, [string] $name, [string] $destination) {
     Protect-Path $destination
     New-TestDirectory ([IO.Path]::GetDirectoryName($destination))
@@ -301,6 +333,19 @@ function Runtime-State($installation, [string] $previewText, [string] $resultTex
     }
 }
 
+function Slot-State($installation, [string] $reportText) {
+    $scope = [regex]::Escape($installation.folder)
+    $pattern = '^' + $scope + '(?:\\|$)'
+    return [pscustomobject]@{
+        pulsePresent = Test-Path -LiteralPath $installation.image
+        iniPresent = Test-Path -LiteralPath (Join-Path $installation.folder 'Pulse.ini')
+        dataPresent = Test-Path -LiteralPath $installation.data
+        webViewPresent = Test-Path -LiteralPath (Join-Path $installation.data 'WebView')
+        remainingRows = @(Selected-Rows $reportText '.' $pattern $installation.folder |
+            Where-Object status -in 'Осталось','Не проверено' | Select-Object -First 30)
+    }
+}
+
 function Gone([string] $path) { return !(Test-Path -LiteralPath $path) }
 
 function Verify-DeleteError([string] $path, [int] $code) {
@@ -408,12 +453,15 @@ try {
     $serviceName = 'PulseHostedFixtureConfirmed'
     $otherServiceName = 'PulseHostedFixtureUnrelated'
     try {
-        Need ($null -eq (Get-Service -Name $serviceName -ErrorAction SilentlyContinue)) 'The confirmed service already exists.'
-        Need ($null -eq (Get-Service -Name $otherServiceName -ErrorAction SilentlyContinue)) 'The unrelated service already exists.'
-        New-Service -Name $serviceName -BinaryPathName ('"' + $b.image + '"') -StartupType Disabled | Out-Null
-        New-Service -Name $otherServiceName -BinaryPathName ('"' + $otherImage + '"') -StartupType Disabled | Out-Null
+        New-DisabledFixtureService $serviceName $b.image
+        New-DisabledFixtureService $otherServiceName $otherImage
+        $observations.serviceManager = [ordered]@{
+            confirmedBefore = Query-ServiceState $serviceName
+            unrelatedBefore = Query-ServiceState $otherServiceName
+        }
+        Need ($observations.serviceManager.confirmedBefore.queryCode -eq 0 -and $observations.serviceManager.unrelatedBefore.queryCode -eq 0) 'Both disabled services were not observable before cleanup.'
         $servicePair = $true
-    } catch { Blocked 'Windows service registration' 'The hosted runner could not create both disabled disposable services.' }
+    } catch { Blocked 'Windows service registration' (Hide-RunnerPaths $_.Exception.Message) }
 
     $locked = Join-Path $busy.data 'WebView\EBWebView\Default\Cache\Cache_Data\data_0'
     $denied = Join-Path $busy.data 'WebView\EBWebView\Default\Network\Cookies'
@@ -478,6 +526,10 @@ try {
     ) 'Exact release window exposed both copies and required confirmation before changes.'
 
     $first = Gui-Apply $window $cleanup
+    $observations.installSlotsAfterFirst = [ordered]@{
+        A = Slot-State $a $first
+        B = Slot-State $b $first
+    }
     $postCleanReady = (Gone $a.image) -and (Gone $b.image) -and (Gone $a.data) -and (Gone $b.data) -and
         (Gone (Join-Path $a.folder 'Pulse.ini')) -and (Gone (Join-Path $b.folder 'Pulse.ini'))
     Check 'Two installs, old updater, stage and WebView data' (
@@ -514,11 +566,18 @@ try {
         ) "Confirmed task absent $confirmedTaskAbsent, unrelated task unchanged $unrelatedTaskUnchanged, report recorded removal $($observations.taskScheduler.removalInReport)."
     }
     if ($servicePair) {
+        $observations.serviceManager.confirmedAfter = Query-ServiceState $serviceName
+        $observations.serviceManager.unrelatedAfter = Query-ServiceState $otherServiceName
+        $observations.serviceManager.plannedInPreview = Has-Row $preview 'К удалению' $serviceName
+        $observations.serviceManager.removalInReport = Has-Row $first 'Выполнено' $serviceName
+        $servicePattern = '^(?:PulseHostedFixture(?:Confirmed|Unrelated)|Диспетчер служб)$'
+        $observations.serviceManager.preview = @(Selected-Rows $preview 'служб' $servicePattern)
+        $observations.serviceManager.after = @(Selected-Rows $first 'служб' $servicePattern)
+        $confirmedCode = $observations.serviceManager.confirmedAfter.queryCode
+        $unrelatedCode = $observations.serviceManager.unrelatedAfter.queryCode
         Check 'Windows service registration' (
-            ($null -eq (Get-Service -Name $serviceName -ErrorAction SilentlyContinue)) -and
-            ($null -ne (Get-Service -Name $otherServiceName -ErrorAction SilentlyContinue)) -and
-            (Has-Row $first 'Выполнено' $serviceName)
-        ) 'Confirmed disabled service registration removed. The unrelated entry was retained.'
+            $confirmedCode -eq 1060 -and $unrelatedCode -eq 0 -and $observations.serviceManager.removalInReport
+        ) "SCM query Win32 codes confirmed $confirmedCode and unrelated $unrelatedCode. Removal reported $($observations.serviceManager.removalInReport)."
     }
     Check 'Unrelated executable, process, documents and junction target' (
         !$otherProcess.HasExited -and
@@ -628,6 +687,11 @@ try {
     $retryPlan = Gui-Report $window 'Проверьте найденные экземпляры'
     Need (Has-Row $retryPlan 'К удалению' $busy.image) 'The scoped path could not be rediscovered after clearing both faults.'
     $retry = Gui-Apply $window $cleanup
+    $observations.installSlotsAfterRetry = [ordered]@{
+        A = Slot-State $a $retry
+        B = Slot-State $b $retry
+    }
+    if ($servicePair) { $observations.serviceManager.confirmedAfterRetry = Query-ServiceState $serviceName }
     Check 'Retry after unlocking and restoring the file ACL' (
         (Gone $locked) -and (Gone $denied) -and (Gone $busy.image) -and
         (Has-Row $retry 'Выполнено' $locked) -and (Has-Row $retry 'Выполнено' $denied)
