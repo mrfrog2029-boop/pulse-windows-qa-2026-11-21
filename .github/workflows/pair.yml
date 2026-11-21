@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/pair.yml
-      - ci/run-remote-pair.ps1
+      - ci/pair-action/**
       - tests/exe-remote-pair*.mjs
 
 permissions:
@@ -21,7 +21,7 @@ jobs:
       matrix:
         include:
           - role: A
-            image: windows-2025
+            image: windows-2022
           - role: B
             image: windows-2022
     runs-on: ${{ matrix.image }}
@@ -40,32 +40,13 @@ jobs:
         run: |
           .\ci\unpack-inputs.ps1
           .\ci\prepare-windows.ps1
-      - name: Start the isolated role and publish its fingerprint
+      - name: Install locked Actions artifact client
         shell: pwsh
-        run: .\ci\run-remote-pair.ps1 -Stage Start -Role $env:PULSE_PAIR_ROLE
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: pulse-pair-identity-${{ github.run_attempt }}-${{ matrix.role }}
-          path: ${{ env.PULSE_PAIR_DIR }}/self.json
-          if-no-files-found: error
-          retention-days: 1
-      - name: Find the other role's fingerprint in this run
-        id: peer
-        shell: pwsh
+        run: npm.cmd ci --prefix .\ci\pair-action --ignore-scripts --no-fund --no-audit
+      - name: Connect the two running clients and record their room tests
+        uses: ./ci/pair-action
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: .\ci\run-remote-pair.ps1 -Stage FindPeer -Role $env:PULSE_PAIR_ROLE
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: ${{ steps.peer.outputs.name }}
-          path: ${{ env.PULSE_PAIR_DIR }}/peer-artifact
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: ${{ github.run_id }}
-      - name: Join both rooms and record the result
-        if: ${{ !cancelled() }}
-        shell: pwsh
-        run: .\ci\run-remote-pair.ps1 -Stage Finish -Role $env:PULSE_PAIR_ROLE
+          GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ !cancelled() }}
         with:

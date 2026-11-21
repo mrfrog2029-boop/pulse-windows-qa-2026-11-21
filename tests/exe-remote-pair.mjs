@@ -78,13 +78,19 @@ async function writeJson(path, value) {
   await rename(staged, path);
 }
 
-// Only the test's authenticated counterpart may receive targeted relay mail.
+// Targeted mail can reach the authenticated counterpart or the sender's encrypted outbox.
 function installGuard({ fixtureUrl }) {
   const nativeSend = WebSocket.prototype.send;
   let peer = null;
-  const counts = { allowed: 0, blocked: 0 };
+  let self = null;
+  const counts = { allowed: 0, mirroredToSelf: 0, blocked: 0 };
   window.pulseRemotePairGuard = {
-    pin: recipient => { if (peer === null) peer = recipient; },
+    pin: ({ recipient, sender }) => {
+      if (peer === null) {
+        peer = recipient;
+        self = sender;
+      }
+    },
     counts: () => ({ ...counts }),
   };
   if (fixtureUrl) {
@@ -102,11 +108,13 @@ function installGuard({ fixtureUrl }) {
     }
     if (packet?.[0] === "EVENT" && packet[1]?.kind === 4454) {
       const recipients = packet[1].tags?.filter(tag => tag[0] === "p") ?? [];
-      if (peer === null || recipients.length !== 1 || recipients[0][1] !== peer) {
+      const target = recipients[0]?.[1];
+      if (peer === null || packet[1].pubkey !== self || recipients.length !== 1 || (target !== peer && target !== self)) {
         counts.blocked++;
         return;
       }
-      counts.allowed++;
+      if (target === peer) counts.allowed++;
+      else counts.mirroredToSelf++;
     }
     return nativeSend.call(this, payload);
   };
@@ -193,23 +201,31 @@ async function launch(options, scratch, report, fixture, session) {
     "--ignore-certificate-errors-spki-list=" + fixture.pin, "--force-webrtc-ip-handling-policy=disable_non_proxied_udp");
   environment.WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = argumentsForWebView.join(" ");
   const hostedDesktop = process.env.GITHUB_ACTIONS === "true" && process.env.RUNNER_ENVIRONMENT === "github-hosted";
+  const startup = report.nativeStartup = { inheritedDesktop: hostedDesktop, childStarted: false,
+    webViewDataCreated: false, cdpAnswered: false, applicationPageSeen: false };
   const launchArguments = hostedDesktop ? [image, "--inherit-desktop"] : [image];
   const child = spawn(launcher, launchArguments, { cwd: scratch, env: environment, windowsHide: true, stdio: ["pipe", "pipe", "ignore"] });
   session.child = child;
   let processStarted = false;
   let launcherFailed = false;
-  child.stdout.on("data", chunk => { processStarted ||= /PULSE_PID=[1-9][0-9]*/.test(String(chunk)); });
+  child.stdout.on("data", chunk => {
+    processStarted ||= /PULSE_PID=[1-9][0-9]*/.test(String(chunk));
+    startup.childStarted = processStarted;
+  });
   child.on("error", () => { launcherFailed = true; });
   child.stdin.on("error", () => {});
 
   const endpoint = "http://127.0.0.1:" + port;
   await waitFor(async () => {
     check(!launcherFailed && child.exitCode === null, "The isolated Windows desktop launcher exited.");
+    startup.webViewDataCreated ||= existsSync(join(data, "WebView", "EBWebView"));
     try {
       const result = await fetch(endpoint + "/json/list", { signal: AbortSignal.timeout(750) });
-      return processStarted && (await result.json()).some(target => target.type === "page" && target.url.startsWith(origin + "/"));
+      startup.cdpAnswered ||= result.ok;
+      startup.applicationPageSeen ||= (await result.json()).some(target => target.type === "page" && target.url.startsWith(origin + "/"));
+      return processStarted && startup.applicationPageSeen;
     } catch { return false; }
-  }, 25_000, "The launched native WebView2 did not expose its local target.");
+  }, hostedDesktop ? 70_000 : 25_000, "The launched native WebView2 did not expose its local target.");
   const { chromium } = createRequire(join(options.deps, "package.json"))("playwright-core");
   const browser = await chromium.connectOverCDP(endpoint, { timeout: 10_000 });
   const page = await waitFor(() => browser.contexts().flatMap(context => context.pages())
@@ -318,7 +334,9 @@ async function exactSearch(page, peer, timeout) {
 }
 
 async function makeFriends(page, role, peer, observation, timeout) {
-  await page.evaluate(address => window.pulseRemotePairGuard.pin(address), peer.npub);
+  await page.evaluate(addresses => window.pulseRemotePairGuard.pin(addresses), {
+    recipient: peer.npub, sender: observation.profile.npub,
+  });
   if (role === "B") {
     const row = page.locator("#req-box .req").filter({ has: page.getByText(peer.name, { exact: true }) });
     await waitFor(async () => observation.incomingAuthors.has(peer.npub) && await row.count() === 1 && await row.isVisible(),
@@ -366,12 +384,30 @@ async function sendText(page, type, value) {
   await waitFor(() => hasMessage(page, selector, value), 10_000, "The sender's message did not appear in the native UI.");
 }
 
-async function roomRound(page, options, roomOwner, peer, timeout) {
+async function enterRoomByCode(page, code, name) {
+  await clickIn(page, "#rail-add");
+  await clickIn(page, '#rm-tabs [data-v="join"]');
+  await input(page, "#rm-code", "Залетай в Pulse — комната «" + name + "»\nКод: " + code);
+  const button = page.locator("#rm-join-btn");
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    await click(button);
+    const outcome = await waitFor(async () => {
+      if (await visible(page, "#view-room")) return "joined";
+      return await button.isEnabled() && await visible(page, "#room-modal") && "verification-rejected";
+    }, 30_000, "The native room verification did not finish.");
+    if (outcome === "joined") return attempt;
+    await sleep(750);
+  }
+  throw new CheckError("The native client rejected the verified host's room code in two attempts.");
+}
+
+async function roomRound(page, options, roomOwner, peer, timeout, roomCodes) {
   const host = options.role === roomOwner;
   const runId = options["run-id"];
   const channel = "pulse-qa:" + runId + ":" + roomOwner + ":";
   const name = "QA " + roomOwner + " " + runId.slice(0, 8);
   let issued = false;
+  let joinAttempts = 0;
   if (host) {
     await clickIn(page, "#rail-add");
     await input(page, "#rm-name", name);
@@ -379,8 +415,10 @@ async function roomRound(page, options, roomOwner, peer, timeout) {
     await clickIn(page, "#rm-create-btn");
     const code = await waitFor(async () => {
       const value = await text(page, "#waiting-code");
-      return roomCode.test(value) && await visible(page, "#waiting-code") && value;
+      return await text(page, "#room-name") === name && roomCode.test(value) && !roomCodes.has(value) &&
+        await visible(page, "#waiting-code") && value;
     }, timeout, "The host did not show the actual room code.");
+    roomCodes.add(code);
     issued = true;
     await openDm(page, peer);
     await sendText(page, "dm", channel + "invite:" + code);
@@ -391,10 +429,9 @@ async function roomRound(page, options, roomOwner, peer, timeout) {
     const code = await waitFor(async () => (await chatText(page, "#dm-messages .kind-text:not(.mine) .bubble"))
       .filter(value => value.startsWith(prefix)).map(value => value.slice(prefix.length)).find(value => roomCode.test(value)),
     timeout, "The authenticated host's room code did not arrive in Pulse DM.", "BLOCKED");
-    await clickIn(page, "#rail-add");
-    await clickIn(page, '#rm-tabs [data-v="join"]');
-    await input(page, "#rm-code", "Залетай в Pulse — комната «" + name + "»\nКод: " + code);
-    await clickIn(page, "#rm-join-btn");
+    check(!roomCodes.has(code), "The invitation repeated a previously joined room code.");
+    roomCodes.add(code);
+    joinAttempts = await enterRoomByCode(page, code, name);
   }
   let roster;
   try {
@@ -418,7 +455,7 @@ async function roomRound(page, options, roomOwner, peer, timeout) {
     channel + "verified:" + opposite(options.role)), timeout, "The other role's room verification did not arrive.");
   await leaveRoom(page);
   return { codeIssued: issued, codeEnteredFromPeerDm: !issued, privateRoom: true,
-    locallyObservedParticipants: 2, peerRoomMessage: true, reciprocalVerification: true };
+    locallyObservedParticipants: 2, peerRoomMessage: true, reciprocalVerification: true, joinAttempts };
 }
 
 function validateFixture(value) {
@@ -484,7 +521,10 @@ async function main() {
 
     await writeJson(join(exchange, "self.json"), { schema: 1, role: options.role, runId: options["run-id"], identityFingerprint: own });
     const fromPeer = join(exchange, "peer.json");
-    await waitFor(() => existsSync(fromPeer), exchangeTimeout, "The opposite job's identity artifact did not arrive.", "BLOCKED");
+    await waitFor(() => {
+      check(!existsSync(join(exchange, "peer-unavailable")), "The opposite job's identity artifact did not arrive.", "BLOCKED");
+      return existsSync(fromPeer);
+    }, exchangeTimeout, "The opposite job's identity artifact did not arrive.", "BLOCKED");
     check((await lstat(fromPeer)).size <= 1024, "The peer fingerprint file was unexpectedly large.");
     const fingerprint = peerRecord(JSON.parse(await readFile(fromPeer, "utf8")), options["run-id"], options.role, own);
     const peer = await confirmDirectory(page, other, fingerprint, timeout);
@@ -495,11 +535,13 @@ async function main() {
     pass(3, { exactNicknameShownByClient: true });
     await makeFriends(page, options.role, peer, observation, timeout);
     pass(4, { locallyObservedOnline: true });
-    pass(5, await roomRound(page, options, "A", peer, timeout));
-    pass(6, await roomRound(page, options, "B", peer, timeout));
+    const roomCodes = new Set();
+    pass(5, await roomRound(page, options, "A", peer, timeout, roomCodes));
+    pass(6, await roomRound(page, options, "B", peer, timeout, roomCodes));
     const mail = await page.evaluate(() => window.pulseRemotePairGuard.counts());
     check(mail.blocked === 0 && mail.allowed > 0, "The test observed an unverified recipient or did not send encrypted relay mail.");
-    pass(7, { targetedFramesToVerifiedPeer: mail.allowed, blockedRecipients: mail.blocked });
+    pass(7, { targetedFramesToVerifiedPeer: mail.allowed, encryptedCopiesToOwnAccount: mail.mirroredToSelf,
+      blockedRecipients: mail.blocked });
   } catch (error) {
     const status = error instanceof CheckError ? error.status : "FAIL";
     const details = error instanceof CheckError ? error.message : "The intended action did not finish through the native UI.";

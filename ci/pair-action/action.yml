@@ -1,0 +1,5 @@
+name: Run one isolated Pulse role
+description: Keep its native process alive while exchanging only public identity fingerprints with the opposite job
+runs:
+  using: node24
+  main: index.cjs
