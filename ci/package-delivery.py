@@ -2,6 +2,7 @@
 
 import argparse
 import hashlib
+import re
 import zipfile
 from pathlib import Path
 
@@ -47,6 +48,19 @@ def package(kind, output):
                             '.github/workflows/*.yml', 'evidence/*.md', 'evidence/*.json'):
                 paths.update(p.relative_to(ROOT).as_posix() for p in ROOT.glob(pattern) if p.is_file())
         entries = {name: (ROOT / name).read_bytes() for name in paths}
+        if kind == 'source':
+            for report in (ROOT / 'evidence').glob('*.md'):
+                links = re.findall(r'\]\(\.\./(test-runs/[^)]+)\)', report.read_text(encoding='utf-8-sig'))
+                for link in links:
+                    path = (ROOT / link).resolve()
+                    if not path.is_relative_to(ROOT / 'test-runs') or path.suffix not in ('.json', '.txt'):
+                        raise ValueError('Unexpected linked evidence path.')
+                    if path.is_file() and link not in entries:
+                        data = path.read_bytes()
+                        if path.suffix == '.txt':
+                            trace = data.decode('utf-8-sig').replace(str(path.parent), '<synthetic fixture>')
+                            data = trace.encode('utf-8')
+                        entries[link] = data
 
     output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output, 'w') as archive:
