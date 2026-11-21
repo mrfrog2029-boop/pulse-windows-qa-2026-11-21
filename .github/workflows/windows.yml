@@ -1,0 +1,54 @@
+name: Pulse on Windows
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - pulse-inputs.zip
+      - .github/workflows/**
+      - ci/**
+permissions:
+  contents: read
+  actions: read
+jobs:
+  cleanup:
+    name: Production cleanup and reinstall on Windows Server 2025 x64
+    runs-on: windows-2025
+    timeout-minutes: 32
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Extract test inputs and attest device and release
+        shell: pwsh
+        run: |
+          Expand-Archive -LiteralPath .\pulse-inputs.zip -DestinationPath . -Force
+          .\ci\prepare-windows.ps1
+      - name: Test the shipping GUI against actual Windows integrations
+        id: cleanup
+        shell: powershell
+        run: |
+          powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\tests\cleanup-hosted.ps1 -CleanupExe .\release\Pulse-Cleanup.exe -PulseExe .\release\Pulse.exe -Report .\test-runs\cleanup-hosted.json
+          exit $LASTEXITCODE
+      - name: Reinstall the exact release and connect two new accounts
+        if: ${{ !cancelled() && steps.cleanup.outcome != 'skipped' }}
+        shell: pwsh
+        run: |
+          $evidence = Get-Content -Raw -LiteralPath .\test-runs\cleanup-hosted.json | ConvertFrom-Json
+          if (-not $evidence.postCleanReady) { throw 'Post-clean client test requires both old installation slots to be clean.' }
+          $slots = Join-Path $env:RUNNER_TEMP 'pulse-cleanup-hosted\installs'
+          node .\tests\exe-acceptance.mjs --exe .\release\Pulse.exe --sha256 $env:PULSE_QA_SHA --build-id $env:PULSE_QA_BUILD --web $env:PULSE_QA_WEB --deps $env:PULSE_QA_DEPS --transport relay-only --post-clean-installs $slots --report .\test-runs\exe-hosted-post-clean.json
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() }}
+        with:
+          name: windows-cleanup-and-reinstall-${{ github.run_attempt }}
+          path: |
+            test-runs/device.json
+            test-runs/cleanup-hosted.json
+            test-runs/exe-hosted-post-clean.json
+          if-no-files-found: warn
+          retention-days: 14
