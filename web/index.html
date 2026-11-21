@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob: mediastream:;
+    connect-src 'self' wss: blob: data: https://speed.cloudflare.com/cdn-cgi/trace https://1.1.1.1/cdn-cgi/trace https://turnservers.vdo.ninja;
+    object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <linearGradient id="g-accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="var(--a1)"/><stop offset="1" stop-color="var(--a2)"/>
+    </linearGradient>
+    <symbol id="i-logo" viewBox="0 0 24 24"><path d="M2 12h3.5l2.5-7 4 14 3-9 2 4h5"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+    <symbol id="i-mic-off" viewBox="0 0 24 24"><path d="m2 2 20 20"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><path d="M12 19v3"/></symbol>
+    <symbol id="i-head" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+    <symbol id="i-head-off" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="m16 13 5.22 3.48a.5.5 0 0 0 .78-.42V7.87a.5.5 0 0 0-.75-.43L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
+    <symbol id="i-cam-off" viewBox="0 0 24 24"><path d="M10.66 6H14a2 2 0 0 1 2 2v2.5l5.25-3.06A.5.5 0 0 1 22 7.87v8.2"/><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-screen" viewBox="0 0 24 24"><path d="m9 10 3-3 3 3"/><path d="M12 13V7"/><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M12 17v4"/><path d="M8 21h8"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-hangup" viewBox="0 0 24 24"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><path d="M22 2 2 22"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16V4a2 2 0 0 1 2-2h10"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-enter" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/></symbol>
+    <symbol id="i-vol" viewBox="0 0 24 24"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.41 7.59A1.4 1.4 0 0 1 5.42 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.42a1.4 1.4 0 0 1 1 .41l3.38 3.39a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.36 18.36a9 9 0 0 0 0-12.72"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-check2" viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+    <symbol id="i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.56-2.5 5.56-5.55C21.97 6.01 17.46 2 12 2z"/><circle cx="7.5" cy="10.5" r="1.2"/><circle cx="12" cy="7" r="1.2"/><circle cx="16.5" cy="10.5" r="1.2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/><path d="M7 16h10"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1.2" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" rx="1.2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/></symbol>
+    <symbol id="i-reply" viewBox="0 0 24 24"><path d="m9 17-5-5 5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="4"/></symbol>
+    <symbol id="i-flip" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M8 16H3v5"/></symbol>
+ <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-hash" viewBox="0 0 24 24"><path d="M4 9h16"/><path d="M4 15h16"/><path d="M10 3 8 21"/><path d="M16 3l-2 18"/></symbol>
+  </defs>
+</svg>
+
+<!-- Живой фон -->
+<div id="bg" aria-hidden="true">
+  <div id="wallpaper" class="hidden"></div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="gridlines"></div>
+  <div class="vignette"></div>
+</div>
+
+<header id="titlebar">
+  <div class="tb-brand"><svg class="ic logo-ic"><use href="#i-logo"/></svg><span>PULSE</span></div>
+  <div class="tb-center" id="tb-status"></div>
+</header>
+
+<!-- ============ СОЗДАНИЕ АККАУНТА ============ -->
+<section id="onboarding" class="hidden">
+  <div class="ob-hero">
+    <div class="orb"><span></span><span></span><span></span><svg class="ic"><use href="#i-logo"/></svg></div>
+    <h1>Связь, которая<br><span class="grad-text">принадлежит тебе</span></h1>
+    <ul class="ob-features">
+      <li><svg class="ic"><use href="#i-zap"/></svg><div><b>Минимальная задержка</b><span>Голос идёт напрямую, без серверов-посредников</span></div></li>
+      <li><svg class="ic"><use href="#i-lock"/></svg><div><b>Шифрование из конца в конец</b><span>Ключи создаются и хранятся только у тебя</span></div></li>
+      <li><svg class="ic"><use href="#i-globe"/></svg><div><b>Работает без VPN</b><span>Децентрализованная сеть, блокировать нечего</span></div></li>
+    </ul>
+  </div>
+
+  <div class="ob-card glass">
+    <!-- Вход -->
+    <div class="ob-step hidden" id="ob-login">
+      <h2>С возвращением</h2>
+      <p class="muted">Выбери аккаунт и введи пароль.</p>
+      <div class="acc-list" id="acc-list"></div>
+      <form class="pw-form" id="login-form" autocomplete="off">
+        <label class="field"><span>Пароль</span>
+          <div class="pw-wrap"><input class="input" type="password" id="login-pw" autocomplete="current-password"><button type="button" class="icon-btn pw-eye" tabindex="-1" title="Показать"><svg class="ic sm"><use href="#i-eye"/></svg></button></div>
+        </label>
+        <label class="switch"><input type="checkbox" id="login-remember"><i></i> Запомнить на этом устройстве</label>
+        <div class="form-error" id="login-error"></div>
+        <button class="btn primary big shine" type="submit" id="login-btn">Войти <svg class="ic"><use href="#i-enter"/></svg></button>
+      </form>
+      <div class="ob-links">
+        <button class="link" data-goto="ob-step1">+ Новый аккаунт</button>
+        <button class="link" data-remote>Войти по @нику</button>
+        <button class="link" data-goto="ob-restore">Войти по резервной копии</button>
+        <button class="link muted" id="login-forgot">Забыли пароль?</button>
+      </div>
+    </div>
+
+    <!-- Создание -->
+    <div class="ob-step hidden" id="ob-step1">
+      <h2>Создание аккаунта</h2>
+      <p class="muted">Без почты и телефона. Пароль шифрует ключи и всю переписку на этом устройстве — его нельзя восстановить, запомни его.</p>
+      <button class="avatar-pick" id="ob-avatar" title="Загрузить аватарку (PNG, JPG, WEBP, GIF)">
+        <div class="ap-preview" id="ob-avatar-preview"></div>
+        <div class="ap-overlay"><svg class="ic"><use href="#i-camera"/></svg></div>
+      </button>
+      <label class="field"><span>Имя</span><input class="input" id="ob-name" maxlength="32" placeholder="Как тебя зовут?" autocomplete="off"></label>
+      <label class="field"><span>@ник</span>
+        <div class="nick-wrap"><b>@</b><input class="input" id="ob-nick" maxlength="24" placeholder="например, vasya_99" autocomplete="off" spellcheck="false"></div>
+        <div class="nk-state" id="ob-nick-state">По нему тебя найдут друзья, и по нему ты войдёшь с телефона или другого ПК</div>
+      </label>
+      <label class="field"><span>Статус <i class="muted">— необязательно</i></span><input class="input" id="ob-bio" maxlength="120" placeholder="Например: играю в CS, зовите" autocomplete="off"></label>
+      <label class="field"><span>Пароль</span>
+        <div class="pw-wrap"><input class="input" type="password" id="ob-pw" autocomplete="new-password" placeholder="Минимум 8 символов"><button type="button" class="icon-btn pw-eye" tabindex="-1" title="Показать"><svg class="ic sm"><use href="#i-eye"/></svg></button></div>
+        <div class="pw-meter" id="ob-pw-meter"><i></i><b></b></div>
+      </label>
+      <label class="field"><span>Повтори пароль</span><input class="input" type="password" id="ob-pw2" autocomplete="new-password"></label>
+      <div class="field"><span>Цвет интерфейса</span><div class="theme-pick" id="ob-themes"></div></div>
+      <label class="switch"><input type="checkbox" id="ob-remember" checked><i></i> Запомнить на этом устройстве</label>
+      <div class="switch terms-row"><label class="switch"><input type="checkbox" id="ob-terms"><i></i> Я принимаю</label><button type="button" class="link" id="ob-terms-open">условия пользования</button></div>
+      <div class="form-error" id="ob-error"></div>
+      <button class="btn primary big shine" id="ob-create">Создать аккаунт <svg class="ic"><use href="#i-enter"/></svg></button>
+      <div class="ob-links">
+        <button class="link" data-remote>У меня уже есть аккаунт — войти по @нику</button>
+        <button class="link hidden" id="ob-to-login" data-goto="ob-login">Аккаунты на этом устройстве</button>
+        <button class="link" data-goto="ob-restore">Войти по резервной копии</button>
+      </div>
+    </div>
+
+    <!-- Вход с другого устройства -->
+    <div class="ob-step hidden" id="ob-remote">
+      <h2>Вход по @нику</h2>
+      <p class="muted">Подходит для любого устройства: ПК или телефона. Друзья, комнаты и профиль подтянутся сами.</p>
+      <form class="pw-form" id="rl-form" autocomplete="off">
+        <label class="field"><span>@ник</span>
+          <div class="nick-wrap"><b>@</b><input class="input" id="rl-nick" maxlength="25" autocomplete="username" spellcheck="false"></div>
+        </label>
+        <label class="field"><span>Пароль</span>
+          <div class="pw-wrap"><input class="input" type="password" id="rl-pw" autocomplete="current-password"><button type="button" class="icon-btn pw-eye" tabindex="-1" title="Показать"><svg class="ic sm"><use href="#i-eye"/></svg></button></div>
+        </label>
+        <label class="switch"><input type="checkbox" id="rl-remember" checked><i></i> Запомнить на этом устройстве</label>
+        <div class="form-error" id="rl-error"></div>
+        <button class="btn primary big" type="submit" id="rl-btn">Войти <svg class="ic"><use href="#i-enter"/></svg></button>
+      </form>
+      <div class="ob-links">
+        <button class="link" id="rl-back">← Назад</button>
+      </div>
+    </div>
+
+    <!-- Восстановление -->
+    <div class="ob-step hidden" id="ob-restore">
+      <h2>Вход по резервной копии</h2>
+      <p class="muted">Файл <b>.pulse</b> создаётся в Настройки → Аккаунт на другом устройстве. Введи пароль, которым он был защищён.</p>
+      <button class="file-drop" id="rs-file"><svg class="ic"><use href="#i-download"/></svg><span id="rs-file-name">Выбрать файл копии</span></button>
+      <label class="field"><span>Пароль от копии</span>
+        <div class="pw-wrap"><input class="input" type="password" id="rs-pw"><button type="button" class="icon-btn pw-eye" tabindex="-1" title="Показать"><svg class="ic sm"><use href="#i-eye"/></svg></button></div>
+      </label>
+      <label class="switch"><input type="checkbox" id="rs-remember"><i></i> Запомнить на этом устройстве</label>
+      <div class="form-error" id="rs-error"></div>
+      <button class="btn primary big shine" id="rs-btn">Восстановить и войти</button>
+      <div class="ob-links">
+        <button class="link" id="rs-back">← Назад</button>
+      </div>
+    </div>
+
+    <!-- Пароль для аккаунта из прошлой версии -->
+    <div class="ob-step hidden" id="ob-migrate">
+      <h2>Защити аккаунт паролем</h2>
+      <p class="muted">Теперь в Pulse есть пароли. Придумай пароль для аккаунта <b id="mg-name"></b>: им зашифруются переписка, друзья и вложения на этом устройстве. Друзья и комнаты сохранятся.</p>
+      <label class="field"><span>Пароль</span>
+        <div class="pw-wrap"><input class="input" type="password" id="mg-pw" autocomplete="new-password" placeholder="Минимум 8 символов"><button type="button" class="icon-btn pw-eye" tabindex="-1" title="Показать"><svg class="ic sm"><use href="#i-eye"/></svg></button></div>
+        <div class="pw-meter" id="mg-pw-meter"><i></i><b></b></div>
+      </label>
+      <label class="field"><span>Повтори пароль</span><input class="input" type="password" id="mg-pw2" autocomplete="new-password"></label>
+      <label class="switch"><input type="checkbox" id="mg-remember"><i></i> Запомнить на этом устройстве</label>
+      <div class="form-error" id="mg-error"></div>
+      <button class="btn primary big shine" id="mg-btn">Сохранить пароль</button>
+    </div>
+
+    <!-- Генерация ключей -->
+    <div class="ob-step hidden" id="ob-step2">
+      <div class="keygen">
+        <div class="keygen-ring"></div>
+        <svg class="ic"><use href="#i-lock"/></svg>
+      </div>
+      <h2 id="ob-gen-title">Создаём ключи шифрования…</h2>
+      <p class="muted" id="ob-gen-sub">ECDSA + ECDH P-256, мастер-ключ AES-256, пароль через scrypt</p>
+      <div class="hidden" id="ob-done">
+        <p>Твой ID — дай его друзьям, чтобы они добавили тебя:</p>
+        <button class="id-card" id="ob-id"></button>
+        <button class="btn primary big shine" id="ob-go">Поехали</button>
+      </div>
+    </div>
+    <div class="ob-copy">Pulse от exepcstudio · © 2026 · Все права защищены</div>
+  </div>
+</section>
+
+<!-- ============ ОСНОВНОЕ ОКНО ============ -->
+<div id="shell" class="hidden">
+  <nav id="rail">
+    <button class="rail-btn home active" id="rail-home" data-tip="Друзья"><svg class="ic"><use href="#i-logo"/></svg><span class="rail-badge hidden" id="home-badge"></span></button>
+    <div class="rail-sep"></div>
+    <div id="rail-rooms" class="rail-rooms"></div>
+    <button class="rail-btn add" id="rail-add" data-tip="Создать или войти в комнату"><svg class="ic"><use href="#i-plus"/></svg></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-btn ghost" id="rail-settings" data-tip="Настройки"><svg class="ic"><use href="#i-settings"/></svg></button>
+  </nav>
+
+  <aside id="panel">
+    <div id="panel-home" class="panel-sec">
+      <div class="panel-head">
+        <h3>Друзья</h3>
+        <button class="icon-btn accent" id="pf-add" title="Добавить друга"><svg class="ic"><use href="#i-user-plus"/></svg></button>
+      </div>
+      <label class="search"><svg class="ic sm"><use href="#i-search"/></svg><input id="friend-search" placeholder="Имя, @ник, ID друга или комната" spellcheck="false"></label>
+      <div id="req-box" class="req-box"></div>
+      <div class="list-label"><span>Все друзья</span><span id="online-count" class="pill"></span></div>
+      <div id="friend-list" class="friend-list">
+      </div>
+      <div id="search-results" class="search-results"></div>
+    </div>
+
+    <div id="panel-room" class="panel-sec hidden">
+      <div class="room-head">
+        <button class="room-icon-btn" id="room-icon" title="Сменить иконку комнаты"></button>
+        <div class="rh-text">
+          <div id="room-name" class="room-name" title="Переименовать"></div>
+          <div class="muted small" id="room-sub"></div>
+        </div>
+      </div>
+      <button class="btn glass full" id="copy-invite"><svg class="ic sm"><use href="#i-user-plus"/></svg> Пригласить</button>
+      <div class="list-label"><span>В комнате</span><span id="people-count" class="pill">1</span></div>
+      <div id="people" class="people"></div>
+    </div>
+
+    <div id="callbar" class="callbar hidden">
+      <div class="cb-info">
+        <div class="cb-title"><span class="live-dot"></span><span id="cb-title">Голосовая связь</span></div>
+        <div class="cb-sub" id="cb-sub"></div>
+      </div>
+      <button class="icon-btn" id="cb-open" title="Открыть звонок"><svg class="ic sm"><use href="#i-max"/></svg></button>
+      <button class="icon-btn danger" id="cb-hangup" title="Завершить"><svg class="ic sm"><use href="#i-hangup"/></svg></button>
+    </div>
+
+    <div id="userbar" class="userbar">
+      <button class="ub-me" id="ub-me" title="Мой профиль">
+        <div id="ub-avatar" class="ub-avatar"></div>
+        <div class="ub-info"><div id="ub-name" class="ub-name"></div><div id="ub-status" class="ub-status">В сети</div></div>
+      </button>
+      <button class="icon-btn" id="ub-mic" title="Микрофон (Ctrl+Shift+M)"><svg class="ic sm"><use href="#i-mic"/></svg></button>
+      <button class="icon-btn" id="ub-deaf" title="Звук (Ctrl+Shift+D)"><svg class="ic sm"><use href="#i-head"/></svg></button>
+      <button class="icon-btn" id="ub-settings" title="Настройки"><svg class="ic sm"><use href="#i-settings"/></svg></button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <!-- Главная -->
+    <section id="view-welcome" class="view">
+      <div class="welcome">
+        <div class="orb small"><span></span><span></span><span></span><svg class="ic"><use href="#i-logo"/></svg></div>
+        <h1 class="welcome-title">Привет, <span class="grad-text" id="w-name"></span></h1>
+        <p class="muted">Добавь друзей по @нику или создай комнату для общего созвона.</p>
+
+        <div class="w-grid">
+          <div class="w-card glass">
+            <div class="w-card-ic"><svg class="ic"><use href="#i-user"/></svg></div>
+            <h3 id="w-id-title">Твой ID</h3>
+            <p class="muted small" id="w-share-status"></p>
+            <button class="id-card" id="w-id" title="Нажми, чтобы скопировать"></button>
+          </div>
+          <div class="w-card glass">
+            <div class="w-card-ic"><svg class="ic"><use href="#i-user-plus"/></svg></div>
+            <h3>Добавить друга</h3>
+            <p class="muted small">Впиши @ник друга — он получит заявку.</p>
+            <div class="inline-form">
+              <input class="input" id="w-add" placeholder="@ник или id-…" autocomplete="off" spellcheck="false">
+              <button class="btn primary" id="w-add-btn"><svg class="ic sm"><use href="#i-enter"/></svg></button>
+            </div>
+          </div>
+          <div class="w-card glass">
+            <div class="w-card-ic"><svg class="ic"><use href="#i-hash"/></svg></div>
+            <h3>Комнаты</h3>
+            <p class="muted small">Постоянные голосовые комнаты для компании — со своей иконкой и чатом.</p>
+            <button class="btn glass" id="w-room"><svg class="ic sm"><use href="#i-plus"/></svg> Создать или войти</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Личка -->
+    <section id="view-dm" class="view hidden">
+      <header class="view-head">
+        <button class="icon-btn big m-back" id="dm-back" title="Назад"><svg class="ic"><use href="#i-back"/></svg></button>
+        <div class="vh-who" id="dm-who"></div>
+        <div class="vh-actions">
+          <button class="icon-btn big" id="dm-call" title="Позвонить"><svg class="ic"><use href="#i-phone"/></svg></button>
+          <button class="icon-btn big" id="dm-video" title="Видеозвонок"><svg class="ic"><use href="#i-cam"/></svg></button>
+          <button class="icon-btn big" id="dm-invite" title="Позвать в текущую комнату"><svg class="ic"><use href="#i-user-plus"/></svg></button>
+          <button class="icon-btn big" id="dm-more" title="Ещё"><svg class="ic"><use href="#i-more"/></svg></button>
+        </div>
+      </header>
+      <div class="messages" id="dm-messages"></div>
+      <div class="typing" id="dm-typing"></div>
+      <div class="reply-bar hidden" id="dm-reply"></div>
+      <div class="composer glass" id="dm-composer">
+        <button class="icon-btn" id="dm-attach" title="Фото или файл"><svg class="ic"><use href="#i-clip"/></svg></button>
+        <textarea id="dm-input" rows="1" maxlength="4000" placeholder="Написать…"></textarea>
+        <button class="icon-btn rec-btn" id="dm-voice" title="Голосовое сообщение"><svg class="ic"><use href="#i-mic"/></svg></button>
+        <button class="icon-btn rec-btn" id="dm-circle" title="Кружочек (видеосообщение)"><svg class="ic"><use href="#i-circle"/></svg></button>
+        <button class="send-btn" id="dm-send" title="Отправить (Enter)"><svg class="ic"><use href="#i-send"/></svg></button>
+        <input type="file" id="dm-file-input" multiple hidden>
+      </div>
+    </section>
+
+    <!-- Комната / звонок -->
+    <section id="view-room" class="view hidden">
+      <div class="stage" id="stage">
+        <div class="grid" id="grid"></div>
+        <div class="waiting" id="waiting">
+          <div class="radar"><span></span><span></span><span></span><div class="radar-core" id="waiting-avatar"></div></div>
+          <h2 id="waiting-title" aria-live="polite">Поиск участников</h2>
+          <p class="muted" id="waiting-detail">Участники открывают комнату по одному коду.</p>
+          <button class="id-card" id="waiting-code" title="Скопировать приглашение"></button>
+          <button class="btn glass hidden" type="button" id="waiting-network">Настройки сети</button>
+          <div class="quick-invite" id="quick-invite"></div>
+        </div>
+        <div class="dock glass" id="dock">
+          <div class="dock-meter"><div id="mic-meter-bar"></div></div>
+          <button class="ctl" id="btn-mic" data-tip="Микрофон"><svg class="ic"><use href="#i-mic"/></svg></button>
+          <button class="ctl" id="btn-deaf" data-tip="Звук"><svg class="ic"><use href="#i-head"/></svg></button>
+          <button class="ctl off" id="btn-cam" data-tip="Камера"><svg class="ic"><use href="#i-cam-off"/></svg></button>
+          <button class="ctl" id="btn-screen" data-tip="Демонстрация экрана"><svg class="ic"><use href="#i-screen"/></svg></button>
+          <span class="dock-sep"></span>
+          <button class="ctl" id="btn-side" data-tip="Чат"><svg class="ic"><use href="#i-chat"/></svg><span class="dot hidden" id="unread-dot"></span></button>
+          <button class="ctl" id="btn-settings" data-tip="Настройки"><svg class="ic"><use href="#i-settings"/></svg></button>
+          <button class="ctl danger" id="btn-leave" data-tip="Выйти"><svg class="ic"><use href="#i-hangup"/></svg></button>
+        </div>
+        <div class="stage-tags">
+          <button class="tag m-back" id="room-back"><svg class="ic sm"><use href="#i-back"/></svg> Назад</button>
+          <span class="tag ok" title="Сквозное шифрование"><svg class="ic sm"><use href="#i-lock"/></svg> E2E</span>
+          <span class="tag" id="net-status"><svg class="ic sm"><use href="#i-signal"/></svg> <span id="net-text">…</span></span>
+          <span class="tag" id="call-timer">00:00</span>
+          <span class="tag hidden" id="mode-hint"></span>
+        </div>
+      </div>
+      <aside class="drawer glass" id="drawer">
+        <div class="drawer-head"><h3>Чат комнаты</h3><button class="icon-btn" id="drawer-close"><svg class="ic sm"><use href="#i-x"/></svg></button></div>
+        <div class="messages" id="messages"></div>
+        <div class="typing" id="typing"></div>
+        <div class="reply-bar hidden" id="room-reply"></div>
+        <div class="composer" id="room-composer">
+          <button class="icon-btn" id="attach" title="Фото или файл"><svg class="ic"><use href="#i-clip"/></svg></button>
+          <textarea id="msg-input" rows="1" maxlength="4000" placeholder="Сообщение…"></textarea>
+          <button class="icon-btn rec-btn" id="room-voice" title="Голосовое сообщение"><svg class="ic"><use href="#i-mic"/></svg></button>
+          <button class="icon-btn rec-btn" id="room-circle" title="Кружочек (видеосообщение)"><svg class="ic"><use href="#i-circle"/></svg></button>
+          <button class="send-btn" id="send" title="Отправить (Enter)"><svg class="ic"><use href="#i-send"/></svg></button>
+          <input type="file" id="file-input" multiple hidden>
+        </div>
+      </aside>
+    </section>
+  </main>
+</div>
+
+<!-- ============ ВХОДЯЩИЙ / ИСХОДЯЩИЙ ЗВОНОК ============ -->
+<div class="call-overlay hidden" id="ring-overlay">
+  <div class="ring-card">
+    <div class="ring-avatar"><span></span><span></span><span></span><div id="ring-avatar"></div></div>
+    <h2 id="ring-name"></h2>
+    <p class="muted" id="ring-sub"></p>
+    <div class="ring-actions" id="ring-actions">
+      <button class="round danger" id="ring-decline" title="Отклонить"><svg class="ic"><use href="#i-hangup"/></svg></button>
+      <button class="round ok" id="ring-accept" title="Ответить"><svg class="ic"><use href="#i-phone"/></svg></button>
+      <button class="round ok" id="ring-accept-video" title="Ответить с видео"><svg class="ic"><use href="#i-cam"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ЗАПИСЬ КРУЖОЧКА ============ -->
+<div class="call-overlay hidden" id="circle-overlay">
+  <div class="circ-card">
+    <div class="circ-preview">
+      <video id="circ-video" autoplay playsinline muted></video>
+      <svg class="circ-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" class="cp-track"/><circle cx="50" cy="50" r="48" class="cp-prog" id="circ-prog"/></svg>
+    </div>
+    <div class="circ-time"><span class="rec-dot"></span><span id="circ-time">0:00</span></div>
+    <div class="ring-actions">
+      <button class="round danger" id="circ-cancel" title="Отменить"><svg class="ic"><use href="#i-trash"/></svg></button>
+      <button class="round ghost" id="circ-flip" title="Сменить камеру"><svg class="ic"><use href="#i-flip"/></svg></button>
+      <button class="round ok" id="circ-send" title="Отправить"><svg class="ic"><use href="#i-send"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ МОДАЛКИ ============ -->
+<div class="modal-backdrop hidden" id="modal-backdrop"></div>
+
+<div class="modal hidden" id="room-modal" role="dialog">
+  <div class="modal-head">
+    <h2>Комната</h2>
+    <button class="icon-btn" data-close><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="seg" id="rm-tabs">
+    <button data-v="create" class="active">Создать</button>
+    <button data-v="join">Войти по коду</button>
+  </div>
+  <div id="rm-create" class="rm-pane">
+    <div class="rm-row">
+      <button class="avatar-pick square" id="rm-icon" title="Иконка комнаты">
+        <div class="ap-preview" id="rm-icon-preview"></div>
+        <div class="ap-overlay"><svg class="ic"><use href="#i-image"/></svg></div>
+      </button>
+      <label class="field grow"><span>Название</span><input class="input" id="rm-name" maxlength="40" placeholder="Например, «Ночной рейд»"></label>
+    </div>
+    <p class="muted small">У каждой новой комнаты свой код. Открывайте одну комнату по общему коду, чтобы встретиться.</p>
+    <label class="switch"><input type="checkbox" id="rm-public"><i></i> Публичная — её можно найти по названию в поиске</label>
+    <button class="btn primary big shine" id="rm-create-btn">Создать и войти</button>
+  </div>
+  <div id="rm-join" class="rm-pane hidden">
+    <label class="field"><span>Код или сообщение-приглашение</span><textarea class="input mono" id="rm-code" rows="3" placeholder="pulse-…" autocomplete="off" spellcheck="false"></textarea></label>
+    <button class="btn primary big shine" id="rm-join-btn">Войти</button>
+  </div>
+</div>
+
+<div class="modal hidden" id="addfriend-modal" role="dialog">
+  <div class="modal-head">
+    <h2>Добавить друга</h2>
+    <button class="icon-btn" data-close><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <p class="muted">Впиши @ник друга или его ID вида id-…. ID можно скопировать в настройках аккаунта.</p>
+  <div class="inline-form">
+    <input class="input" id="af-code" placeholder="@ник или id-…" autocomplete="off" spellcheck="false">
+    <button class="btn primary" id="af-btn">Отправить</button>
+  </div>
+  <div class="divider"><span>ты</span></div>
+  <button class="id-card" id="af-my"></button>
+  <p class="muted small" id="af-share-status"></p>
+</div>
+
+<div class="modal wide hidden" id="settings-modal" role="dialog">
+  <div class="settings">
+    <nav class="settings-nav">
+      <div class="sn-title">Настройки</div>
+      <button class="snav active" data-sec="account"><svg class="ic sm"><use href="#i-user"/></svg> Аккаунт</button>
+      <button class="snav" data-sec="look"><svg class="ic sm"><use href="#i-palette"/></svg> Внешний вид</button>
+      <button class="snav" data-sec="audio"><svg class="ic sm"><use href="#i-mic"/></svg> Голос</button>
+      <button class="snav" data-sec="video"><svg class="ic sm"><use href="#i-cam"/></svg> Видео</button>
+      <button class="snav" data-sec="network"><svg class="ic sm"><use href="#i-globe"/></svg> Сеть</button>
+      <button class="snav" data-sec="privacy"><svg class="ic sm"><use href="#i-shield"/></svg> Безопасность</button>
+      <button class="snav desktop-only" data-sec="keys"><svg class="ic sm"><use href="#i-keyboard"/></svg> Клавиши</button>
+      <button class="snav desktop-only" data-sec="system"><svg class="ic sm"><use href="#i-monitor"/></svg> Система</button>
+      <div class="sn-version muted small" id="app-version"></div>
+    </nav>
+    <div class="settings-body">
+      <button class="icon-btn settings-close" data-close><svg class="ic"><use href="#i-x"/></svg></button>
+
+      <section class="ssec" data-sec="account">
+        <h2>Аккаунт</h2>
+        <div class="profile-card">
+          <div class="pc-banner"></div>
+          <div class="pc-body">
+            <button class="avatar-pick" id="s-avatar" title="Сменить аватарку">
+              <div class="ap-preview" id="s-avatar-preview"></div>
+              <div class="ap-overlay"><svg class="ic"><use href="#i-camera"/></svg></div>
+            </button>
+            <div class="pc-fields">
+              <label class="field"><span>Никнейм</span><input class="input" id="s-name" maxlength="32"></label>
+              <label class="field"><span>Статус</span><input class="input" id="s-bio" maxlength="120" placeholder="Расскажи о себе"></label>
+            </div>
+          </div>
+          <div class="btn-row"><button class="btn glass sm" id="s-avatar-remove">Убрать аватарку</button></div>
+        </div>
+        <div class="field"><span>@ник</span><button class="id-card" id="s-nick"></button><button class="btn glass sm hidden" id="s-nick-edit">Выбрать другой @ник</button></div>
+        <div class="field"><span>ID для друзей</span><button class="id-card" id="s-friendcode" title="Нажми, чтобы скопировать ID для друзей"></button></div>
+        <div class="field"><span>Отпечаток ключа для проверки безопасности</span><div class="mono muted" id="s-myid"></div></div>
+        <div class="acct-box">
+          <h3><svg class="ic sm"><use href="#i-key"/></svg> Пароль и вход</h3>
+          <div class="btn-row">
+            <button class="btn glass" id="s-lock"><svg class="ic sm"><use href="#i-lock"/></svg> Заблокировать сейчас</button>
+            <button class="btn glass" id="s-logout">Выйти из аккаунта</button>
+          </div>
+          <label class="switch"><input type="checkbox" id="s-remember"><i></i> Входить без пароля на этом устройстве</label>
+          <label class="field"><span>Автоблокировка при бездействии</span>
+            <select id="s-autolock">
+              <option value="0">Выключена</option>
+              <option value="5">Через 5 минут</option>
+              <option value="15">Через 15 минут</option>
+              <option value="60">Через час</option>
+            </select>
+          </label>
+          <details class="sub-form">
+            <summary>Сменить пароль</summary>
+            <label class="field"><span>Текущий пароль</span><input class="input" type="password" id="s-pw-old" autocomplete="current-password"></label>
+            <label class="field"><span>Новый пароль</span><input class="input" type="password" id="s-pw-new" autocomplete="new-password"><div class="pw-meter" id="s-pw-meter"><i></i><b></b></div></label>
+            <label class="field"><span>Повтори новый пароль</span><input class="input" type="password" id="s-pw-new2" autocomplete="new-password"></label>
+            <button class="btn primary" id="s-pw-change">Сменить пароль</button>
+          </details>
+          <details class="sub-form" id="s-backup-wrap">
+            <summary>Резервная копия — вход на другом устройстве</summary>
+            <p class="muted small">Файл содержит ключи аккаунта, друзей, комнаты и историю (без вложений) и зашифрован твоим паролем. На другом устройстве выбери «Войти по резервной копии».</p>
+            <p class="muted small legacy-note">Ключи этого аккаунта созданы в версии без паролей и не переносятся.</p>
+            <label class="field"><span>Пароль аккаунта</span><input class="input" type="password" id="s-backup-pw" autocomplete="current-password"></label>
+            <button class="btn primary" id="s-backup"><svg class="ic sm"><use href="#i-download"/></svg> Скачать резервную копию</button>
+          </details>
+        </div>
+        <div class="danger-zone">
+          <div><b>Удалить аккаунт</b><p class="muted small">Сотрёт с этого устройства ключи, друзей, комнаты и историю этого аккаунта. Другие аккаунты останутся. Отменить нельзя.</p></div>
+          <button class="btn danger" id="s-delete">Удалить</button>
+        </div>
+      </section>
+
+      <section class="ssec hidden" data-sec="look">
+        <h2>Внешний вид</h2>
+        <div class="field"><span>Цветовая тема</span><div class="theme-pick big" id="s-themes"></div></div>
+        <div class="field"><span>Фон приложения</span>
+          <div class="wall-row">
+            <button class="wall-preview" id="s-wall-preview" title="Выбрать картинку"><span>Своя картинка<br><small>PNG, JPG, WEBP или анимированный GIF</small></span></button>
+            <div class="wall-actions">
+              <button class="btn primary sm" id="s-wall-pick"><svg class="ic sm"><use href="#i-image"/></svg> Выбрать картинку</button>
+              <button class="btn glass sm" id="s-wall-clear">Вернуть живой фон</button>
+            </div>
+          </div>
+        </div>
+        <label class="field" id="s-wall-dim-wrap"><span>Затемнение картинки: <b id="s-wall-dim-v"></b></span><input type="range" id="s-wall-dim" min="0" max="90" step="5"></label>
+        <label class="field" id="s-wall-blur-wrap"><span>Размытие картинки: <b id="s-wall-blur-v"></b></span><input type="range" id="s-wall-blur" min="0" max="30" step="1"></label>
+        <label class="switch"><input type="checkbox" id="s-lowfps"><i></i> <b>Минимальная затрата FPS</b> — выключает все анимации и эффекты, окно почти не нагружает видеокарту</label>
+        <label class="switch"><input type="checkbox" id="s-anim"><i></i> Анимированный фон и эффекты</label>
+        <label class="field"><span>Яркость фона: <b id="s-bgint-v"></b></span><input type="range" id="s-bgint" min="0" max="150" step="5"></label>
+        <label class="switch"><input type="checkbox" id="s-reactive"><i></i> Аватарки и рамки реагируют на голос</label>
+      </section>
+
+      <section class="ssec hidden" data-sec="audio">
+        <h2>Голос</h2>
+        <div class="row2">
+          <label class="field"><span>Микрофон</span><select id="s-mic"></select></label>
+          <label class="field"><span>Вывод звука</span><select id="s-out"></select></label>
+        </div>
+        <label class="field"><span>Усиление моего микрофона: <b id="s-micgain-v">100%</b></span>
+          <input type="range" id="s-micgain" min="0" max="300" step="5">
+        </label>
+        <div class="meter-row">
+          <div class="meter"><div id="s-meter"></div><div class="vad-mark" id="s-vad-mark"></div></div>
+          <button class="btn glass sm" id="s-monitor">Послушать себя</button>
+        </div>
+        <label class="field"><span>Общая громкость: <b id="s-master-v">100%</b></span>
+          <input type="range" id="s-master" min="0" max="200" step="5">
+        </label>
+        <div class="field"><span>Режим микрофона</span>
+          <div class="seg" id="s-mode">
+            <button data-v="open">Всегда включён</button>
+            <button data-v="vad">По голосу</button>
+            <button data-v="ptt">Рация</button>
+          </div>
+        </div>
+        <label class="field" id="s-vad-wrap"><span>Порог голосовой активации: <b id="s-vad-v"></b></span>
+          <input type="range" id="s-vad" min="1" max="60" step="1">
+        </label>
+        <div class="field" id="s-ptt-wrap"><span>Клавиша рации (когда окно активно)</span>
+          <button class="btn glass mono" id="s-ptt-key"></button>
+        </div>
+        <label class="switch"><input type="checkbox" id="s-ns"><i></i> Шумоподавление</label>
+        <label class="switch"><input type="checkbox" id="s-ec"><i></i> Эхоподавление</label>
+        <label class="switch"><input type="checkbox" id="s-agc"><i></i> Автоусиление микрофона</label>
+        <label class="switch"><input type="checkbox" id="s-joinmuted"><i></i> Заходить с выключенным микрофоном</label>
+        <label class="switch"><input type="checkbox" id="s-sounds"><i></i> Звуки входа, выхода и сообщений</label>
+      </section>
+
+      <section class="ssec hidden" data-sec="video">
+        <h2>Видео</h2>
+        <label class="field"><span>Камера</span><select id="s-cam"></select></label>
+        <label class="field"><span>Качество камеры</span>
+          <select id="s-camq">
+            <option value="360">360p — экономно</option>
+            <option value="720">720p — стандарт</option>
+            <option value="1080">1080p — максимум</option>
+          </select>
+        </label>
+        <label class="switch"><input type="checkbox" id="s-mirror"><i></i> Зеркалить своё видео</label>
+      </section>
+
+      <section class="ssec hidden" data-sec="network">
+        <h2>Сеть</h2>
+        <label class="switch"><input type="checkbox" id="s-lowlat"><i></i> Ультранизкая задержка (аудиопакеты по 10 мс)</label>
+        <label class="field"><span>Качество голоса</span>
+          <select id="s-bitrate">
+            <option value="32000">32 кбит/с — слабый интернет</option>
+            <option value="64000">64 кбит/с — отлично</option>
+            <option value="128000">128 кбит/с — студия</option>
+          </select>
+        </label>
+        <label class="switch"><input type="checkbox" id="s-reserve-voice" checked><i></i> Резервная связь через VDO.Ninja</label>
+        <p class="muted small">В открытой комнате сервис помогает участникам найти друг друга. Если прямое соединение недоступно, он передаёт зашифрованный звук. Можно также указать свой TURN-сервер.</p>
+        <label class="field"><span>TURN URL</span><input class="input mono" id="s-turn" placeholder="turn:host:3478"></label>
+        <div class="row2">
+          <label class="field"><span>Логин</span><input class="input" id="s-turn-user"></label>
+          <label class="field"><span>Пароль</span><input class="input" type="password" id="s-turn-pass"></label>
+        </div>
+        <label class="field"><span>Nostr-релеи для поиска друзей, статусов и комнат</span>
+          <textarea class="input mono" id="s-relays" rows="5"></textarea>
+        </label>
+        <label class="field"><span>STUN-серверы (пусто = по умолчанию)</span>
+          <textarea class="input mono" id="s-stun" rows="3"></textarea>
+        </label>
+        <p class="muted small">Укажи по одному адресу wss:// на строку или оставь список пустым для стандартных серверов. Для связи с другом нужен хотя бы один общий сервер.</p>
+        <button type="button" class="btn glass hidden" id="s-apply-network">Перезапустить Pulse с этими настройками</button>
+        <button type="button" class="btn glass" id="s-network-report">Скопировать журнал сети</button>
+      </section>
+
+      <section class="ssec hidden" data-sec="privacy">
+        <h2>Безопасность</h2>
+        <label class="switch"><input type="checkbox" id="s-guard"><i></i> <b>Режим защиты</b> — нельзя отправить мат, а в чужих сообщениях он скрыт звёздочками</label>
+        <label class="switch"><input type="checkbox" id="s-history"><i></i> Хранить историю чатов на этом устройстве</label>
+        <div class="btn-row"><button class="btn glass" id="s-clear-history">Удалить всю историю и вложения</button></div>
+        <div class="info-box">
+          <b>Как устроена защита</b>
+          <ul>
+            <li>Аккаунт — это пара ключей ECDSA/ECDH P-256. Закрытые ключи неизвлекаемые: их нельзя скопировать даже из приложения.</li>
+            <li>Звук, видео, сообщения и файлы идут напрямую по DTLS-SRTP. Ни один сервер их не видит.</li>
+            <li>Каждое соединение подписывается ключом аккаунта — подмену собеседника видно сразу.</li>
+            <li>Личный канал с другом получен через ECDH: его адрес и ключ знаете только вы двое.</li>
+            <li>Сеть поиска (Nostr) видит лишь зашифрованные AES-GCM приглашения под хешированными адресами.</li>
+            <li>Код безопасности у участника позволяет голосом убедиться, что между вами нет посредника.</li>
+            <li>Учти: при прямом соединении собеседник видит твой IP — как в любой P2P-связи.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="ssec hidden" data-sec="keys">
+        <h2>Горячие клавиши</h2>
+        <p class="muted small">Работают глобально — даже когда окно свёрнуто (например, в игре).</p>
+        <label class="field"><span>Вкл/выкл микрофон</span><input class="input mono" id="s-hk-mute" placeholder="CommandOrControl+Shift+M"></label>
+        <label class="field"><span>Вкл/выкл звук</span><input class="input mono" id="s-hk-deaf" placeholder="CommandOrControl+Shift+D"></label>
+        <p class="muted small">Формат: CommandOrControl+Shift+M, Alt+F1, F9 и т.п.</p>
+      </section>
+
+      <section class="ssec hidden" data-sec="system">
+        <h2>Система</h2>
+        <label class="switch"><input type="checkbox" id="s-tray"><i></i> При закрытии сворачивать в трей (чтобы друзья могли дозвониться)</label>
+        <label class="switch"><input type="checkbox" id="s-autostart"><i></i> Запускать вместе с Windows</label>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="modal hidden" id="screen-modal" role="dialog">
+  <div class="modal-head">
+    <h2>Что показать?</h2>
+    <button class="icon-btn" data-close><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="screen-opts">
+    <label class="field inline"><span>Качество</span>
+      <select id="screen-q">
+        <option value="720-30">720p · 30 к/с</option>
+        <option value="1080-30" selected>1080p · 30 к/с</option>
+        <option value="1080-60">1080p · 60 к/с (игры)</option>
+      </select>
+    </label>
+    <label class="switch"><input type="checkbox" id="screen-audio"><i></i> Со звуком компьютера</label>
+  </div>
+  <div class="sources" id="sources"></div>
+</div>
+
+<div class="modal hidden" id="verify-modal" role="dialog">
+  <div class="modal-head">
+    <h2>Код безопасности</h2>
+    <button class="icon-btn" data-close><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="verify">
+    <p>Сравните код с <b id="v-name"></b> голосом. Совпадает — значит, между вами точно нет посредника.</p>
+    <div class="v-words" id="v-words"></div>
+    <div class="v-digits mono" id="v-digits"></div>
+    <p class="muted small">Ключ собеседника: <span class="mono" id="v-id"></span></p>
+    <div class="btn-row center">
+      <button class="btn danger" id="v-bad">Не совпадает</button>
+      <button class="btn primary" id="v-ok">Совпадает — доверять</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal hidden" id="terms-modal" role="dialog">
+  <div class="modal-head">
+    <h2>Условия пользования Pulse</h2>
+    <button class="icon-btn" id="terms-x"><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="terms">
+    <p class="muted small">Редакция «Мы не юристы» от 2026 года. Читать необязательно, но мы узнаем, если не прочитаешь.</p>
+    <ol>
+      <li><b>Готовы продать душу?</b> Нажимая «Принимаю», вы передаёте exepcstudio свою душу. Принимаются души в любом состоянии, в том числе б/у и слегка потрёпанные понедельниками.</li>
+      <li>Душа возврату и обмену не подлежит. Чек не выдаётся. Гарантия — 0 лет.</li>
+      <li>exepcstudio не читает ваши сообщения. Не потому что не хочет, а потому что всё зашифровано. Нам до сих пор обидно.</li>
+      <li>Мессенджер рассчитан на трёх человек. Четвёртый автоматически назначается ответственным за пиццу.</li>
+      <li>Звонить друзьям в 3 часа ночи разрешено только по уважительной причине. Уважительные причины: «скучно», «смотри что нашёл», «ты спишь?».</li>
+      <li>Фраза «я на секунду» в голосовом чате длится от 15 минут до бесконечности. Претензии не принимаются.</li>
+      <li>Голосовые сообщения длиннее 5 минут признаются подкастом и облагаются налогом на терпение собеседника.</li>
+      <li>Кружочки, снятые снизу вверх (вид в ноздри), запрещены всеми известными конвенциями.</li>
+      <li>Котики в кружочках разрешены без ограничений и всячески поощряются.</li>
+      <li>Ваш @ник — навсегда. Подумайте ещё раз насчёт «xX_NaGiBaToR_2009_Xx».</li>
+      <li>Пароль восстановить нельзя. Даже нам. Даже за деньги. Особенно за деньги.</li>
+      <li>Если Pulse лагает — включите «Минимальную затрату FPS». Если не помогло — выключите и включите компьютер. Если не помогло — это не лаги, это стиль.</li>
+      <li>Пользователь обязуется хотя бы раз в неделю говорить «а у меня всё работает».</li>
+      <li>Фраза «слышно меня?» может быть произнесена не более 7 раз за звонок. Дальше — только жестами.</li>
+      <li>Демонстрация экрана с открытыми 47 вкладками браузера является добровольным признанием.</li>
+      <li>exepcstudio не несёт ответственности за проигранные катки, пока вы были в звонке. И за выигранные тоже — это ваша заслуга.</li>
+      <li>Сообщение «ок» в ответ на длинное сообщение приравнивается к объявлению войны.</li>
+      <li>exepcstudio оставляет за собой право шутить в условиях пользования, обновлять их без предупреждения и иногда — хорошо.</li>
+      <li>Принимая условия, вы подтверждаете, что не читали их. Мы знаем. Все так делают.</li>
+    </ol>
+    <div class="terms-foot">Pulse от exepcstudio · © 2026 · Все права защищены. Даже те, о которых вы не подумали.</div>
+  </div>
+  <div class="btn-row end">
+    <button class="btn glass" id="terms-no">Душа не продаётся</button>
+    <button class="btn primary" id="terms-yes">Принимаю, забирайте душу</button>
+  </div>
+</div>
+
+<div class="modal hidden" id="nick-modal" role="dialog">
+  <div class="modal-head">
+    <h2>Выбери @ник</h2>
+    <button class="icon-btn" data-close><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <p class="muted">По @нику друзья найдут тебя без всяких id-…, а ты сможешь войти в этот же аккаунт с телефона или другого ПК — по нику и паролю.</p>
+  <label class="field"><span>@ник</span>
+    <div class="nick-wrap"><b>@</b><input class="input" id="nk-nick" maxlength="24" autocomplete="off" spellcheck="false" placeholder="латиница, цифры и _"></div>
+    <div class="nk-state" id="nk-state"></div>
+  </label>
+  <label class="field"><span>Пароль от аккаунта <i class="muted">— им шифруются ключи для входа на других устройствах</i></span><input class="input" type="password" id="nk-pw" autocomplete="current-password"></label>
+  <div class="btn-row end">
+    <button class="btn glass" data-close>Позже</button>
+    <button class="btn primary" id="nk-save">Сохранить</button>
+  </div>
+</div>
+
+<div class="modal hidden" id="prompt-modal" role="dialog">
+  <div class="modal-head">
+    <h2 id="prompt-title"></h2>
+    <button class="icon-btn" data-close><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <input class="input" id="prompt-input" maxlength="40">
+  <div class="btn-row end">
+    <button class="btn glass" data-close>Отмена</button>
+    <button class="btn primary" id="prompt-ok">Сохранить</button>
+  </div>
+</div>
+
+<div class="popover glass hidden" id="vol-pop">
+  <div class="pop-head" id="vol-pop-head"></div>
+  <label class="field"><span>Громкость: <b id="vol-pop-v">100%</b></span>
+    <input type="range" id="vol-pop-range" min="0" max="300" step="5">
+  </label>
+  <div class="btn-row">
+    <button class="btn glass sm" id="vol-pop-reset">100%</button>
+    <button class="btn glass sm" id="vol-pop-mute">Заглушить</button>
+  </div>
+</div>
+
+<div class="menu glass hidden" id="ctx-menu"></div>
+
+<div class="drop-overlay hidden" id="drop-overlay"><div><svg class="ic"><use href="#i-clip"/></svg> Отпусти, чтобы отправить</div></div>
+<div class="toasts" id="toasts"></div>
+<div class="copyright">Pulse от exepcstudio · © 2026 · Все права защищены</div>
+<div class="tooltip hidden" id="tooltip"></div>
+
+<script type="module" src="js/auth.js"></script>
+</body>
+</html>
